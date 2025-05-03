@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 
 const NavBar = () => {
   return (
-    <nav className="flex items-center justify-between bg-gray-800 p-4 shadow-md">
+    <nav className="flex items-center justify-end bg-gray-800 p-4 shadow-md">
       <div className="flex space-x-6">
         <Link to="/" className="text-white text-lg font-semibold hover:text-gray-300 transition-colors duration-300">
           Home
