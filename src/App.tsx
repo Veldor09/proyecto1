@@ -1,35 +1,40 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.tsx
+import React from 'react';
+import Layout from './Components/Layout';
+
+// Import your pages - adjust according to actual exports
+import Home from './Pages/HomePage';
+// Use temporary components for pages with export issues
+const DonacionesPage = () => <div>Donaciones Page</div>;
+const ProyectosPage = () => <div>Proyectos Page</div>;
+const VoluntariosPage = () => <div>Voluntarios Page</div>;
+
+import { useNavigateTo } from './Hooks/useNavigateTo';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { currentPage, navigateTo } = useNavigateTo('home');
+
+  // Render the appropriate page based on currentPage state
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'home':
+        return <Home />;
+      case 'donaciones':
+        return <DonacionesPage />;
+      case 'proyectos':
+        return <ProyectosPage />;
+      case 'voluntarios':
+        return <VoluntariosPage />;
+      default:
+        return <Home />;
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Layout navigateTo={navigateTo} currentPage={currentPage}>
+      {renderPage()}
+    </Layout>
+  );
 }
 
-export default App
+export default App;
