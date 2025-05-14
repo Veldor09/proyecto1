@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-router";
 import RootLayout from "./Components/Layout";
 import HomePage from "./Pages/HomePage";
-import DonacionesPage from "./Pages/DonacionPage";
+import AliadosPage from "./Pages/AliadosPage";
 import ProyectosPage from "./Pages/ProyectosPage";
 import VoluntariosPage from "./Pages/VoluntariosPage";
 import LoginPage from "./Pages/Login.Page";
@@ -32,10 +32,10 @@ const homeRoute = createRoute({
   },
 });
 
-const donacionesRoute = createRoute({
+const aliadosRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/donaciones",
-  component: DonacionesPage,
+  path: "/aliados",
+  component: AliadosPage,
   beforeLoad: ({ context }) => {
     if (!context.auth.user) throw redirect({ to: "/login" });
   },
@@ -67,7 +67,7 @@ const loginRoute = createRoute({
 
 rootRoute.addChildren([
   homeRoute,
-  donacionesRoute,
+  aliadosRoute,
   proyectosRoute,
   voluntariosRoute,
   loginRoute,
