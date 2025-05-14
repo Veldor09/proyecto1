@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { addAliado } from "../Services/AliadosServices";
+import { addAliado } from "../../Services/AliadosServices";
 
 interface Props {
   onClose: () => void;
