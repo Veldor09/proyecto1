@@ -1,7 +1,7 @@
 // AliadoList.jsx
 import { useMemo } from 'react';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
-import {useAliados} from '../Services/AliadosServices.ts'; // Asegúrate que este hook existe
+import {useAliados} from '../../Services/AliadosServices.ts'; // Asegúrate que este hook existe
 
 const AliadoList = () => {
   const { data, isLoading, isError } = useAliados(); // Cambio aquí

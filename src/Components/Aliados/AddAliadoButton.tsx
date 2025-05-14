@@ -1,5 +1,5 @@
 import { useState } from "react";
-import GenericModal from "./GenericModal";
+import GenericModal from "../GenericModal";
 import AddAliadoForm from "./AddAliadoForm";
 
 const AddAliadoButton = () => {

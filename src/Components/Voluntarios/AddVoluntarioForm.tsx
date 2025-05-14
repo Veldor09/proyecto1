@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { addVoluntario } from "../Services/VoluntariosServices";
+import { addVoluntario } from "../../Services/VoluntariosServices";
 
 interface Props {
   onClose: () => void;

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
-import { useVoluntarios } from '../Services/VoluntariosServices';
+import { useVoluntarios } from '../../Services/VoluntariosServices';
 
 const VoluntarioList = () => {
   const { data, isLoading, isError, error } = useVoluntarios();

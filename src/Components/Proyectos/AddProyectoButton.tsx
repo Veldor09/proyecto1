@@ -1,8 +1,8 @@
 import { useState } from "react";
-import GenericModal from "./GenericModal";
-import AddVoluntarioForm from "./AddVoluntarioForm";
+import GenericModal from "../GenericModal";
+import AddProyectoForm from "./AddProyectoForm";
 
-const AddVoluntarioButton = () => {
+const AddProyectoButton = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -11,18 +11,18 @@ const AddVoluntarioButton = () => {
         onClick={() => setIsModalOpen(true)}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
       >
-        + Agregar Voluntario
+        + Agregar Proyecto
       </button>
 
       <GenericModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Agregar nuevo voluntario"
+        title="Agregar nuevo proyecto"
       >
-        <AddVoluntarioForm onClose={() => setIsModalOpen(false)} />
+        <AddProyectoForm onClose={() => setIsModalOpen(false)} />
       </GenericModal>
     </>
   );
 };
 
-export default AddVoluntarioButton;
+export default AddProyectoButton;
