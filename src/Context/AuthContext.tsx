@@ -1,5 +1,5 @@
 // src/Context/AuthContext.tsx
-import { createContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 export type User = {
   email: string;
@@ -29,4 +29,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  return useContext(AuthContext);
 };
