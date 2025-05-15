@@ -24,7 +24,7 @@ const AddVoluntarioForm = ({ onClose }: Props) => {
     e.preventDefault();
     try {
       await addVoluntario(formData);
-      queryClient.invalidateQueries(["voluntarios"]);
+      queryClient.invalidateQueries({ queryKey: ['voluntarios'] });
       onClose();
     } catch (error) {
       console.error("Error al agregar voluntario", error);

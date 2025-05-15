@@ -23,7 +23,7 @@ const AddAliadoForm = ({ onClose }: Props) => {
     e.preventDefault();
     try {
       await addAliado(formData);
-      queryClient.invalidateQueries(["aliados"]);
+      queryClient.invalidateQueries({ queryKey: ['aliados'] });
       onClose();
     } catch (error) {
       console.error("Error al agregar aliado", error);
