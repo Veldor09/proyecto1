@@ -44,3 +44,23 @@ import axios from "axios";
       retry: 1,
     });
   };
+
+  // Editar aliado existente
+export const updateAliado = async (updatedAliado: { id: string; name: string; email: string; }) => {
+    try {
+      const response = await axios.get(ALIADOS_API_URL, { headers: HEADERS });
+      const current = response.data.record.aliados || [];
+  
+      // Reemplaza el aliado con el ID correspondiente
+      const updatedAliados = current.map((aliado: any) =>
+        aliado.id === updatedAliado.id ? updatedAliado : aliado
+      );
+  
+      // Actualiza el bin con la nueva lista
+      await axios.put(ALIADOS_API_URL, { aliados: updatedAliados }, { headers: HEADERS });
+    } catch (error) {
+      console.error('Error al actualizar aliado:', error);
+      throw error;
+    }
+  };
+  

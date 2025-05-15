@@ -5,6 +5,7 @@ import AddAliadoButton from "../Components/Aliados/AddAliadoButton";
 import Login from "../Components/Login";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+// ✅ Mover fuera del componente
 const queryClient = new QueryClient();
 
 const AliadosPage = () => {
@@ -14,9 +15,11 @@ const AliadosPage = () => {
     <>
       {user ? (
         <QueryClientProvider client={queryClient}>
-          <h2>Bienvenido, Aliado</h2>
-          <AddAliadoButton />
-          <AliadoList />
+          <div className="p-4">
+            <h2 className="text-2xl font-semibold mb-4">Bienvenido, Aliado</h2>
+            <AddAliadoButton />
+            <AliadoList />
+          </div>
         </QueryClientProvider>
       ) : (
         <Login />

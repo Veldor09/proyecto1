@@ -1,21 +1,64 @@
 // src/Components/Aliados/AliadoList.tsx
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
   flexRender,
+  ColumnDef,
+  Row,
 } from "@tanstack/react-table";
 import { useAliados } from "../../Services/AliadosServices";
+import EditAliadoForm from "./EditAliadoForm";
+import { getHiddenAliados, hideAliado } from "./HiddenAliados";
+
+interface Aliado {
+  id: string;
+  name: string;
+  email: string;
+}
 
 const AliadoList = () => {
-  const { data, isLoading, isError } = useAliados();
-  const aliados = useMemo(() => data ?? [], [data]);
+  const { data, isLoading, isError, refetch } = useAliados();
 
-  const columns = useMemo(
+  // Estado para forzar re-render al ocultar aliados
+  const [version, setVersion] = useState(0);
+
+  // Filtrar aliados excluyendo los ocultos, se vuelve a calcular cuando cambian data o version
+  const aliados = useMemo(() => {
+    const hiddenIds = getHiddenAliados();
+    return (data ?? []).filter((aliado) => !hiddenIds.includes(aliado.id));
+  }, [data, version]);
+
+  const [selectedAliado, setSelectedAliado] = useState<Aliado | null>(null);
+
+  const columns = useMemo<ColumnDef<Aliado>[]>(
     () => [
       { header: "ID", accessorKey: "id" },
       { header: "Nombre", accessorKey: "name" },
       { header: "Correo", accessorKey: "email" },
+      {
+        header: "Acciones",
+        id: "acciones",
+        cell: ({ row }: { row: Row<Aliado> }) => (
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSelectedAliado(row.original)}
+              className="text-blue-600 hover:underline"
+            >
+              Editar
+            </button>
+            <button
+              onClick={() => {
+                hideAliado(row.original.id);
+                setVersion((v) => v + 1); // Fuerza re-render para actualizar lista
+              }}
+              className="text-red-600 hover:underline"
+            >
+              Eliminar
+            </button>
+          </div>
+        ),
+      },
     ],
     []
   );
@@ -71,6 +114,17 @@ const AliadoList = () => {
           </tbody>
         </table>
       </div>
+
+      {selectedAliado && (
+        <EditAliadoForm
+          aliado={selectedAliado}
+          onClose={() => setSelectedAliado(null)}
+          onSave={() => {
+            refetch();
+            setSelectedAliado(null);
+          }}
+        />
+      )}
     </div>
   );
 };
