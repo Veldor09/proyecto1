@@ -1,8 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { addProyecto } from "../../Services/ProyectosServices";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAliados } from "../../Services/AliadosServices";
 import { useVoluntarios } from "../../Services/VoluntariosServices";
+
+// Tipos de datos esperados
+interface Aliado {
+  name: string;
+  email: string;
+}
+
+interface Voluntario {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
 
 interface AddProyectoFormProps {
   onClose: () => void;
@@ -20,18 +33,34 @@ const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
   });
 
   const queryClient = useQueryClient();
-  const { data: aliados } = useAliados();
-  const { data: voluntarios } = useVoluntarios();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type, checked } = e.target;
+  // Tipado explícito para evitar errores con `.map`
+  const { data: aliados } = useAliados() as { data: Aliado[] };
+  const { data: voluntarios } = useVoluntarios() as { data: Voluntario[] };
+
+  const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+) => {
+  const { name, value, type } = e.target;
+
+  if (type === 'checkbox') {
+    const target = e.target as HTMLInputElement;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: target.checked,
     }));
-  };
+  } else {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+};
 
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+
+  const handleSelectChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const { name, selectedOptions } = e.target;
     const values = Array.from(selectedOptions).map((option) => option.value);
     setFormData((prev) => ({ ...prev, [name]: values }));
@@ -41,7 +70,7 @@ const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
     e.preventDefault();
     try {
       await addProyecto(formData);
-      queryClient.invalidateQueries(['proyectos']);
+      queryClient.invalidateQueries({ queryKey: ['proyectos'] });
       onClose();
     } catch (error) {
       console.error("Error al agregar proyecto", error);
@@ -59,6 +88,7 @@ const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
         required
         className="w-full p-2 border rounded"
       />
+
       <input
         type="text"
         name="ubicacion"
@@ -75,7 +105,8 @@ const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
           name="tieneFondos"
           checked={formData.tieneFondos}
           onChange={handleChange}
-        /> ¿Cuenta con fondos?
+        />{" "}
+        ¿Cuenta con fondos?
       </label>
 
       <label className="block">
@@ -84,7 +115,8 @@ const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
           name="tieneAliados"
           checked={formData.tieneAliados}
           onChange={handleChange}
-        /> ¿Cuenta con aliados?
+        />{" "}
+        ¿Cuenta con aliados?
       </label>
 
       {formData.tieneAliados && (
@@ -94,8 +126,10 @@ const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
           onChange={handleSelectChange}
           className="w-full p-2 border rounded"
         >
-          {aliados?.map((a, i) => (
-            <option key={i} value={a.name}>{a.name}</option>
+          {aliados?.map((a) => (
+            <option key={a.email} value={a.name}>
+              {a.name}
+            </option>
           ))}
         </select>
       )}
@@ -106,7 +140,8 @@ const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
           name="tieneVoluntarios"
           checked={formData.tieneVoluntarios}
           onChange={handleChange}
-        /> ¿Cuenta con voluntarios?
+        />{" "}
+        ¿Cuenta con voluntarios?
       </label>
 
       {formData.tieneVoluntarios && (
@@ -116,8 +151,10 @@ const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
           onChange={handleSelectChange}
           className="w-full p-2 border rounded"
         >
-          {voluntarios?.map((v, i) => (
-            <option key={i} value={v.name}>{v.name}</option>
+          {voluntarios?.map((v) => (
+            <option key={v.id} value={v.name}>
+              {v.name}
+            </option>
           ))}
         </select>
       )}
