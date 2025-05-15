@@ -22,7 +22,7 @@ import axios from "axios";
   };
 
   // Agregar aliado
-  export const addAliado = async (newAliado: { name: string; email: string }) => {
+  export const addAliado = async (newAliado: { id: string; name: string; email: string; }) => {
     try {
       const response = await axios.get(ALIADOS_API_URL, { headers: HEADERS });
       const current = response.data.record.aliados || [];
