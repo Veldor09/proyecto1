@@ -28,17 +28,18 @@ const NavBar = () => {
           Aliados
         </Link>
         <Link
-          to="/proyectos"
-          className="text-white text-lg font-semibold hover:text-gray-300 transition-colors duration-300"
-        >
-          Proyectos
-        </Link>
-        <Link
           to="/voluntarios"
           className="text-white text-lg font-semibold hover:text-gray-300 transition-colors duration-300"
         >
           Voluntarios
         </Link>
+        <Link
+          to="/proyectos"
+          className="text-white text-lg font-semibold hover:text-gray-300 transition-colors duration-300"
+        >
+          Proyectos
+        </Link>
+        
       </div>
     </nav>
   );

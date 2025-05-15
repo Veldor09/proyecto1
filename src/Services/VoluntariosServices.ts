@@ -1,8 +1,17 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 
+// 1. Definir la interfaz Voluntario
+export interface Voluntario {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+// 2. Constantes de configuración
 const BIN = '68250c3e8561e97a50140550';
-const VOLUNTARIOS_API_URL = 'https://api.jsonbin.io/v3/b/' + BIN;
+const VOLUNTARIOS_API_URL = `https://api.jsonbin.io/v3/b/${BIN}`;
 const API_KEY = '$2a$10$1WE9CA71m8Ipze4nUPEUSORtrEj2XD95J9mSOlGqY53PTrY4mdanW';
 
 const HEADERS = {
@@ -10,10 +19,8 @@ const HEADERS = {
   'Content-Type': 'application/json',
 };
 
-
-
-// Obtener voluntarios
-const fetchVoluntarios = async () => {
+// 3. Obtener voluntarios
+const fetchVoluntarios = async (): Promise<Voluntario[]> => {
   try {
     const response = await axios.get(VOLUNTARIOS_API_URL, { headers: HEADERS });
     return response.data.record.voluntarios || [];
@@ -23,23 +30,23 @@ const fetchVoluntarios = async () => {
   }
 };
 
-// Agregar voluntario
-export const addVoluntario = async (newVoluntario: { id: string; name: string; email: string; role: string; }) => {
+// 4. Agregar voluntario
+export const addVoluntario = async (newVoluntario: Voluntario): Promise<void> => {
   try {
     const response = await axios.get(VOLUNTARIOS_API_URL, { headers: HEADERS });
-    const current = response.data.record.voluntarios || [];
+    const current: Voluntario[] = response.data.record.voluntarios || [];
     const updated = [...current, newVoluntario];
 
-   await axios.put(VOLUNTARIOS_API_URL, { voluntarios: updated }, { headers: HEADERS });
+    await axios.put(VOLUNTARIOS_API_URL, { voluntarios: updated }, { headers: HEADERS });
   } catch (error) {
     console.error('Error al agregar voluntario:', error);
     throw error;
   }
 };
 
-// Hook personalizado
+// 5. Hook personalizado para React Query
 export const useVoluntarios = () => {
-  return useQuery({
+  return useQuery<Voluntario[]>({
     queryKey: ['voluntarios'],
     queryFn: fetchVoluntarios,
     staleTime: 5 * 60 * 1000,
@@ -47,12 +54,19 @@ export const useVoluntarios = () => {
   });
 };
 
-export const updateVoluntario = async (updatedVoluntario: any) => {
-  const response = await axios.get(VOLUNTARIOS_API_URL, { headers: HEADERS });
-  const current = response.data.record.voluntarios || [];
-  const updated = current.map((v: any) =>
-    v.id === updatedVoluntario.id ? updatedVoluntario : v
-  );
-  await axios.put(VOLUNTARIOS_API_URL, { voluntarios: updated }, { headers: HEADERS });
-};
+// 6. Editar voluntario existente
+export const updateVoluntario = async (updatedVoluntario: Voluntario): Promise<void> => {
+  try {
+    const response = await axios.get(VOLUNTARIOS_API_URL, { headers: HEADERS });
+    const current: Voluntario[] = response.data.record.voluntarios || [];
 
+    const updated = current.map((v: Voluntario) =>
+      v.id === updatedVoluntario.id ? updatedVoluntario : v
+    );
+
+    await axios.put(VOLUNTARIOS_API_URL, { voluntarios: updated }, { headers: HEADERS });
+  } catch (error) {
+    console.error('Error al actualizar voluntario:', error);
+    throw error;
+  }
+};
