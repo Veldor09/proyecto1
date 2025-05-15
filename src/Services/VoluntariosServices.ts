@@ -10,6 +10,8 @@ const HEADERS = {
   'Content-Type': 'application/json',
 };
 
+
+
 // Obtener voluntarios
 const fetchVoluntarios = async () => {
   try {
@@ -28,7 +30,7 @@ export const addVoluntario = async (newVoluntario: { id: string; name: string; e
     const current = response.data.record.voluntarios || [];
     const updated = [...current, newVoluntario];
 
-    await axios.put(VOLUNTARIOS_API_URL, { voluntarios: updated }, { headers: HEADERS });
+   await axios.put(VOLUNTARIOS_API_URL, { voluntarios: updated }, { headers: HEADERS });
   } catch (error) {
     console.error('Error al agregar voluntario:', error);
     throw error;
@@ -44,3 +46,13 @@ export const useVoluntarios = () => {
     retry: 1,
   });
 };
+
+export const updateVoluntario = async (updatedVoluntario: any) => {
+  const response = await axios.get(VOLUNTARIOS_API_URL, { headers: HEADERS });
+  const current = response.data.record.voluntarios || [];
+  const updated = current.map((v: any) =>
+    v.id === updatedVoluntario.id ? updatedVoluntario : v
+  );
+  await axios.put(VOLUNTARIOS_API_URL, { voluntarios: updated }, { headers: HEADERS });
+};
+

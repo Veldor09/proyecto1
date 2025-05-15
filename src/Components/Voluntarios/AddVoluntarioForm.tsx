@@ -1,18 +1,29 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { addVoluntario } from "../../Services/VoluntariosServices";
+import { addVoluntario, updateVoluntario } from "../../Services/VoluntariosServices";
 
 interface Props {
   onClose: () => void;
+  initialData?: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    hidden?: boolean;
+  };
+  isEdit?: boolean;
 }
 
-const AddVoluntarioForm = ({ onClose }: Props) => {
-  const [formData, setFormData] = useState({
-    id: crypto.randomUUID(),
-    name: "",
-    email: "",
-    role: "",
-  });
+const AddVoluntarioForm = ({ onClose, initialData, isEdit }: Props) => {
+  const [formData, setFormData] = useState(
+    initialData || {
+      id: crypto.randomUUID(),
+      name: "",
+      email: "",
+      role: "",
+      hidden: false,
+    }
+  );
 
   const queryClient = useQueryClient();
 
@@ -23,16 +34,20 @@ const AddVoluntarioForm = ({ onClose }: Props) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await addVoluntario(formData);
+      if (isEdit) {
+        await updateVoluntario(formData);
+      } else {
+        await addVoluntario(formData);
+      }
       queryClient.invalidateQueries({ queryKey: ['voluntarios'] });
       onClose();
     } catch (error) {
-      console.error("Error al agregar voluntario", error);
+      console.error("Error al guardar voluntario", error);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-4">
       <input
         type="text"
         name="name"
@@ -64,7 +79,7 @@ const AddVoluntarioForm = ({ onClose }: Props) => {
         type="submit"
         className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
       >
-        Agregar Voluntario
+        {isEdit ? "Guardar Cambios" : "Agregar Voluntario"}
       </button>
     </form>
   );
