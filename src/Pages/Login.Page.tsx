@@ -2,9 +2,11 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "@tanstack/react-router";
+import { useLogin } from "../Hooks/useLogin";
 
 const LoginPage = () => {
-  const { login } = useContext(AuthContext);
+  const { login: loginToContext } = useContext(AuthContext);
+  const { login } = useLogin();
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
@@ -14,9 +16,9 @@ const LoginPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (username === "admin" && password === "12345") {
-      const fakeUser = { email: "admin@demo.com", name: "Administrador" };
-      login(fakeUser);
+    const result = login(username, password);
+    if (result.success && result.user) {
+      loginToContext(result.user);
       navigate({ to: "/" });
     } else {
       setError("Usuario o contraseña incorrectos");
@@ -37,7 +39,7 @@ const LoginPage = () => {
 
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2">
-            Usuario
+            Correo
           </label>
           <input
             type="text"

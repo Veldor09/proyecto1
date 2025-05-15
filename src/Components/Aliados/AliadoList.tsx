@@ -1,4 +1,3 @@
-// src/Components/Aliados/AliadoList.tsx
 import { useMemo, useState } from "react";
 import {
   useReactTable,
@@ -10,6 +9,7 @@ import {
 import { useAliados } from "../../Services/AliadosServices";
 import EditAliadoForm from "./EditAliadoForm";
 import { getHiddenAliados, hideAliado } from "./HiddenAliados";
+import { useAuth } from "../../Context/AuthContext"; // ✅ Importa el contexto
 
 interface Aliado {
   id: string;
@@ -18,12 +18,11 @@ interface Aliado {
 }
 
 const AliadoList = () => {
+  const { user } = useAuth(); // ✅ Obtiene el usuario logueado
   const { data, isLoading, isError, refetch } = useAliados();
-
-  // Estado para forzar re-render al ocultar aliados
   const [version, setVersion] = useState(0);
 
-  // Filtrar aliados excluyendo los ocultos, se vuelve a calcular cuando cambian data o version
+  // ✅ Filtra aliados ocultos en localStorage
   const aliados = useMemo(() => {
     const hiddenIds = getHiddenAliados();
     return (data ?? []).filter((aliado) => !hiddenIds.includes(aliado.id));
@@ -31,37 +30,36 @@ const AliadoList = () => {
 
   const [selectedAliado, setSelectedAliado] = useState<Aliado | null>(null);
 
-  const columns = useMemo<ColumnDef<Aliado>[]>(
-    () => [
-      { header: "ID", accessorKey: "id" },
-      { header: "Nombre", accessorKey: "name" },
-      { header: "Correo", accessorKey: "email" },
-      {
-        header: "Acciones",
-        id: "acciones",
-        cell: ({ row }: { row: Row<Aliado> }) => (
-          <div className="flex gap-2">
-            <button
-              onClick={() => setSelectedAliado(row.original)}
-              className="text-blue-600 hover:underline"
-            >
-              Editar
-            </button>
+  const columns = useMemo<ColumnDef<Aliado>[]>(() => [
+    { header: "ID", accessorKey: "id" },
+    { header: "Nombre", accessorKey: "name" },
+    { header: "Correo", accessorKey: "email" },
+    {
+      header: "Acciones",
+      id: "acciones",
+      cell: ({ row }: { row: Row<Aliado> }) => (
+        <div className="flex gap-2">
+          <button
+            onClick={() => setSelectedAliado(row.original)}
+            className="text-blue-600 hover:underline"
+          >
+            Editar
+          </button>
+          {user?.role === "admin" && ( // ✅ Mostrar solo si es admin
             <button
               onClick={() => {
                 hideAliado(row.original.id);
-                setVersion((v) => v + 1); // Fuerza re-render para actualizar lista
+                setVersion((v) => v + 1); // Refresca la tabla
               }}
               className="text-red-600 hover:underline"
             >
               Eliminar
             </button>
-          </div>
-        ),
-      },
-    ],
-    []
-  );
+          )}
+        </div>
+      ),
+    },
+  ], [user]); // ✅ Asegura que se reevalúe si cambia el usuario
 
   const table = useReactTable({
     data: aliados,
