@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 
-const BIN = '64c7a5e9b89b1e2299d3e730'; // ⚠️ Cambia por el BIN que uses para proyectos
+const BIN = '68250c788561e97a50140573'; // ⚠️ Cambia por el BIN que uses para proyectos
 const PROYECTOS_API_URL = 'https://api.jsonbin.io/v3/b/' + BIN;
-const API_KEY = '$2a$10$E.wyDo.Z69fnDRowFEiUh.51THUCweAucz3kvZ0qgU17PqfLqZAFW';
+const API_KEY = '$2a$10$1WE9CA71m8Ipze4nUPEUSORtrEj2XD95J9mSOlGqY53PTrY4mdanW';
 
 const HEADERS = {
   'X-Access-Key': API_KEY,

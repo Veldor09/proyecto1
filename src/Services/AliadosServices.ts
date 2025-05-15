@@ -1,9 +1,9 @@
 import axios from "axios";
   import { useQuery } from "@tanstack/react-query";
 
-  const BIN = '64c7a5e9b89b1e2299d3e730';
+  const BIN = '68250c638561e97a50140565';
   const ALIADOS_API_URL = 'https://api.jsonbin.io/v3/b/' + BIN;
-  const API_KEY = '$2a$10$E.wyDo.Z69fnDRowFEiUh.51THUCweAucz3kvZ0qgU17PqfLqZAFW';
+  const API_KEY = '$2a$10$1WE9CA71m8Ipze4nUPEUSORtrEj2XD95J9mSOlGqY53PTrY4mdanW';
 
   const HEADERS = {
     'X-Access-Key': API_KEY,
