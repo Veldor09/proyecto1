@@ -1,66 +1,71 @@
 import axios from "axios";
-  import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
-  const BIN = '68250c638561e97a50140565';
-  const ALIADOS_API_URL = 'https://api.jsonbin.io/v3/b/' + BIN;
-  const API_KEY = '$2a$10$1WE9CA71m8Ipze4nUPEUSORtrEj2XD95J9mSOlGqY53PTrY4mdanW';
+// Tipo para representar un Aliado
+export interface Aliado {
+  id: string;
+  name: string;
+  email: string;
+}
 
-  const HEADERS = {
-    'X-Access-Key': API_KEY,
-    'Content-Type': 'application/json',
-  };
+// Configuración de la API
+const BIN = '68250c638561e97a50140565';
+const ALIADOS_API_URL = `https://api.jsonbin.io/v3/b/${BIN}`;
+const API_KEY = '$2a$10$1WE9CA71m8Ipze4nUPEUSORtrEj2XD95J9mSOlGqY53PTrY4mdanW';
 
-  // Obtener aliados
-  const fetchAliados = async () => {
-    try {
-      const response = await axios.get(ALIADOS_API_URL, { headers: HEADERS });
-      return response.data.record.aliados || [];
-    } catch (error) {
-      console.error('Error al obtener aliados:', error);
-      return [];
-    }
-  };
+const HEADERS = {
+  'X-Access-Key': API_KEY,
+  'Content-Type': 'application/json',
+};
 
-  // Agregar aliado
-  export const addAliado = async (newAliado: { id: string; name: string; email: string; }) => {
-    try {
-      const response = await axios.get(ALIADOS_API_URL, { headers: HEADERS });
-      const current = response.data.record.aliados || [];
-      const updated = [...current, newAliado];
+// Obtener aliados
+const fetchAliados = async (): Promise<Aliado[]> => {
+  try {
+    const response = await axios.get(ALIADOS_API_URL, { headers: HEADERS });
+    return response.data.record.aliados || [];
+  } catch (error) {
+    console.error('Error al obtener aliados:', error);
+    return [];
+  }
+};
 
-      await axios.put(ALIADOS_API_URL, { aliados: updated }, { headers: HEADERS });
-    } catch (error) {
-      console.error('Error al agregar aliado:', error);
-      throw error;
-    }
-  };
+// Agregar aliado
+export const addAliado = async (newAliado: Aliado): Promise<void> => {
+  try {
+    const response = await axios.get(ALIADOS_API_URL, { headers: HEADERS });
+    const current: Aliado[] = response.data.record.aliados || [];
+    const updated = [...current, newAliado];
 
-  // Hook personalizado
-  export const useAliados = () => {
-    return useQuery({
-      queryKey: ['aliados'],
-      queryFn: fetchAliados,
-      staleTime: 5 * 60 * 1000,
-      retry: 1,
-    });
-  };
+    await axios.put(ALIADOS_API_URL, { aliados: updated }, { headers: HEADERS });
+  } catch (error) {
+    console.error('Error al agregar aliado:', error);
+    throw error;
+  }
+};
 
-  // Editar aliado existente
-export const updateAliado = async (updatedAliado: { id: string; name: string; email: string; }) => {
-    try {
-      const response = await axios.get(ALIADOS_API_URL, { headers: HEADERS });
-      const current = response.data.record.aliados || [];
-  
-      // Reemplaza el aliado con el ID correspondiente
-      const updatedAliados = current.map((aliado: any) =>
-        aliado.id === updatedAliado.id ? updatedAliado : aliado
-      );
-  
-      // Actualiza el bin con la nueva lista
-      await axios.put(ALIADOS_API_URL, { aliados: updatedAliados }, { headers: HEADERS });
-    } catch (error) {
-      console.error('Error al actualizar aliado:', error);
-      throw error;
-    }
-  };
-  
+// Hook personalizado para React Query
+export const useAliados = () => {
+  return useQuery<Aliado[]>({
+    queryKey: ['aliados'],
+    queryFn: fetchAliados,
+    staleTime: 5 * 60 * 1000, // 5 minutos
+    retry: 1,
+  });
+};
+
+// Editar aliado existente
+export const updateAliado = async (updatedAliado: Aliado): Promise<void> => {
+  try {
+    const response = await axios.get(ALIADOS_API_URL, { headers: HEADERS });
+    const current: Aliado[] = response.data.record.aliados || [];
+
+    const updatedAliados = current.map((aliado: Aliado) =>
+      aliado.id === updatedAliado.id ? updatedAliado : aliado
+    );
+
+    await axios.put(ALIADOS_API_URL, { aliados: updatedAliados }, { headers: HEADERS });
+  } catch (error) {
+    console.error('Error al actualizar aliado:', error);
+    throw error;
+  }
+};

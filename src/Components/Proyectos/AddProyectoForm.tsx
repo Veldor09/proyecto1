@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { addProyecto } from "../../Services/ProyectosServices";
+import { addProyecto, updateProyecto } from "../../Services/ProyectosServices";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAliados } from "../../Services/AliadosServices";
 import { useVoluntarios } from "../../Services/VoluntariosServices";
 
-// Tipos de datos esperados
 interface Aliado {
   name: string;
   email: string;
@@ -17,50 +16,64 @@ interface Voluntario {
   role: string;
 }
 
-interface AddProyectoFormProps {
-  onClose: () => void;
+interface Proyecto {
+  id: string;
+  nombre: string;
+  ubicacion: string;
+  tieneFondos: boolean;
+  tieneAliados: boolean;
+  aliados: string[];
+  tieneVoluntarios: boolean;
+  voluntarios: string[];
+  hidden?: boolean;
 }
 
-const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
-  const [formData, setFormData] = useState({
-    nombre: "",
-    ubicacion: "",
-    tieneFondos: false,
-    tieneAliados: false,
-    aliados: [] as string[],
-    tieneVoluntarios: false,
-    voluntarios: [] as string[],
-  });
+interface Props {
+  onClose: () => void;
+  initialData?: Proyecto;
+  isEdit?: boolean;
+}
+
+const AddProyectoForm = ({ onClose, initialData, isEdit }: Props) => {
+  const [formData, setFormData] = useState<Proyecto>(
+    initialData || {
+      id: crypto.randomUUID(),
+      nombre: "",
+      ubicacion: "",
+      tieneFondos: false,
+      tieneAliados: false,
+      aliados: [],
+      tieneVoluntarios: false,
+      voluntarios: [],
+      hidden: false,
+    }
+  );
 
   const queryClient = useQueryClient();
 
-  // Tipado explícito para evitar errores con `.map`
   const { data: aliados } = useAliados() as { data: Aliado[] };
   const { data: voluntarios } = useVoluntarios() as { data: Voluntario[] };
 
   const handleChange = (
-  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-) => {
-  const { name, value, type } = e.target;
-
-  if (type === 'checkbox') {
-    const target = e.target as HTMLInputElement;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: target.checked,
-    }));
-  } else {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
-};
-
-
-  const handleSelectChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
+    const { name, value, type } = e.target;
+
+    if (type === "checkbox") {
+      const target = e.target as HTMLInputElement;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: target.checked,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, selectedOptions } = e.target;
     const values = Array.from(selectedOptions).map((option) => option.value);
     setFormData((prev) => ({ ...prev, [name]: values }));
@@ -69,16 +82,24 @@ const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await addProyecto(formData);
-      queryClient.invalidateQueries({ queryKey: ['proyectos'] });
+      if (isEdit) {
+        await updateProyecto(formData);
+      } else {
+        await addProyecto(formData);
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["proyectos"] });
       onClose();
     } catch (error) {
-      console.error("Error al agregar proyecto", error);
+      console.error("Error al guardar proyecto", error);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form
+      onSubmit={handleSubmit}
+      className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4"
+    >
       <input
         type="text"
         name="nombre"
@@ -99,24 +120,24 @@ const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
         className="w-full p-2 border rounded"
       />
 
-      <label className="block">
+      <label className="flex items-center space-x-2">
         <input
           type="checkbox"
           name="tieneFondos"
           checked={formData.tieneFondos}
           onChange={handleChange}
-        />{" "}
-        ¿Cuenta con fondos?
+        />
+        <span>¿Cuenta con fondos?</span>
       </label>
 
-      <label className="block">
+      <label className="flex items-center space-x-2">
         <input
           type="checkbox"
           name="tieneAliados"
           checked={formData.tieneAliados}
           onChange={handleChange}
-        />{" "}
-        ¿Cuenta con aliados?
+        />
+        <span>¿Cuenta con aliados?</span>
       </label>
 
       {formData.tieneAliados && (
@@ -124,7 +145,8 @@ const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
           name="aliados"
           multiple
           onChange={handleSelectChange}
-          className="w-full p-2 border rounded"
+          value={formData.aliados}
+          className="md:col-span-2 w-full p-2 border rounded"
         >
           {aliados?.map((a) => (
             <option key={a.email} value={a.name}>
@@ -134,14 +156,14 @@ const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
         </select>
       )}
 
-      <label className="block">
+      <label className="flex items-center space-x-2">
         <input
           type="checkbox"
           name="tieneVoluntarios"
           checked={formData.tieneVoluntarios}
           onChange={handleChange}
-        />{" "}
-        ¿Cuenta con voluntarios?
+        />
+        <span>¿Cuenta con voluntarios?</span>
       </label>
 
       {formData.tieneVoluntarios && (
@@ -149,7 +171,8 @@ const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
           name="voluntarios"
           multiple
           onChange={handleSelectChange}
-          className="w-full p-2 border rounded"
+          value={formData.voluntarios}
+          className="md:col-span-2 w-full p-2 border rounded"
         >
           {voluntarios?.map((v) => (
             <option key={v.id} value={v.name}>
@@ -159,12 +182,21 @@ const AddProyectoForm = ({ onClose }: AddProyectoFormProps) => {
         </select>
       )}
 
-      <button
-        type="submit"
-        className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
-      >
-        Agregar Proyecto
-      </button>
+      <div className="md:col-span-2 flex justify-end gap-2 mt-4">
+        <button
+          type="button"
+          onClick={onClose}
+          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded"
+        >
+          {isEdit ? "Guardar Cambios" : "Agregar Proyecto"}
+        </button>
+      </div>
     </form>
   );
 };
