@@ -6,7 +6,7 @@ import {
   createBrowserHistory,
   redirect,
 } from "@tanstack/react-router";
-import RootLayout from "./Components/Layout";
+import Layout from "./Components/Layout";
 import HomePage from "./Pages/HomePage";
 import AliadosPage from "./Pages/AliadosPage";
 import ProyectosPage from "./Pages/ProyectosPage";
@@ -20,8 +20,9 @@ export type RouterContext = {
 };
 
 export const rootRoute = createRootRouteWithContext<RouterContext>()({
-  component: RootLayout,
+  component: Layout, // ✅ ahora estás usando el default import real
 });
+
 
 const homeRoute = createRoute({
   getParentRoute: () => rootRoute,

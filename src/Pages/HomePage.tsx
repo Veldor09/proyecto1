@@ -4,93 +4,50 @@ const HomePage: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* HERO CON VIDEO */}
-      <div
-        style={{
-          position: "relative",
-          height: "100vh",
-          overflow: "hidden",
-        }}
-      >
-        <video
-          src="/imagenes/HERO.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            zIndex: 0,
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.4)",
-            zIndex: 1,
-          }}
-        />
-        <div
-          style={{
-            position: "relative",
-            zIndex: 2,
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            color: "white",
-            textAlign: "center",
-            padding: "0 1rem",
-          }}
-        >
-          <h1 style={{ fontSize: "2.5rem", fontWeight: "bold", marginBottom: "1rem" }}>
-            FUNDECODES
-          </h1>
-          <p style={{ fontSize: "1.25rem" }}>
-            Transformando comunidades con compromiso social
-          </p>
-        </div>
-      </div>
+      <div className="relative h-screen w-full overflow-hidden">
+  <video
+    className="absolute top-0 left-0 w-full h-full object-cover z-0"
+    src="/imagenes/HERO.mp4"
+    autoPlay
+    loop
+    muted
+    playsInline
+  />
+</div>
+
 
       {/* ¿QUIÉNES SOMOS? */}
-      <section className="px-6 py-12 bg-white text-gray-800">
-        <h2 className="text-2xl font-semibold mb-4">¿Quiénes somos?</h2>
-        <p>
-          Somos una organización sin fines de lucro dedicada a mejorar la calidad de vida de comunidades vulnerables mediante proyectos sociales, voluntariado y donaciones.
-        </p>
+      <section className="px-6 py-16 bg-white text-gray-800">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-semibold mb-6">¿Quiénes somos?</h2>
+          <p className="text-lg leading-relaxed">
+            Somos una organización sin fines de lucro dedicada a mejorar la calidad de vida
+            de comunidades vulnerables mediante proyectos sociales, voluntariado y donaciones.
+          </p>
+        </div>
       </section>
 
       {/* VISIÓN Y MISIÓN */}
-    {/* VISIÓN Y MISIÓN */}
-<section className="px-6 py-12 bg-gray-50 text-gray-800">
-  <div className="max-w-screen-xl mx-auto">
-    <div className="mb-8">
-      <h2 className="text-2xl font-semibold mb-2">Visión</h2>
-      <p>
-        Ser una organización líder en el desarrollo de iniciativas solidarias que generen impacto positivo en la sociedad.
-      </p>
-    </div>
-
-    
-    <div className="mt-8">
-      <h2 className="text-2xl font-semibold mb-2">Misión</h2>
-      <p>
-        Fomentar la participación ciudadana mediante programas de voluntariado y donaciones, promoviendo la equidad y el desarrollo comunitario.
-      </p>
-    </div>
-  </div>
-</section>
-
+      <section className="px-6 py-16 bg-gray-100 text-gray-800">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12">
+          <div>
+            <h3 className="text-2xl font-semibold mb-4 border-l-4 border-blue-600 pl-3">Visión</h3>
+            <p className="text-lg leading-relaxed">
+              Ser una organización líder en el desarrollo de iniciativas solidarias que generen impacto positivo en la sociedad.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-2xl font-semibold mb-4 border-l-4 border-blue-600 pl-3">Misión</h3>
+            <p className="text-lg leading-relaxed">
+              Fomentar la participación ciudadana mediante programas de voluntariado y donaciones, promoviendo la equidad y el desarrollo comunitario.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* FOOTER */}
-      <footer className="bg-blue-900 text-white py-6 text-center">
-        <p className="text-sm">© 2025 Tu Organización. Todos los derechos reservados.</p>
+      <footer className="bg-blue-900 text-white py-6 text-center mt-auto">
+        <p className="text-sm">&copy; 2025 FUNDECODES. Todos los derechos reservados.</p>
       </footer>
     </div>
   );
