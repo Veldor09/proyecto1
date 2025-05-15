@@ -8,7 +8,7 @@ interface Props {
 
 const AddVoluntarioForm = ({ onClose }: Props) => {
   const [formData, setFormData] = useState({
-    id: crypto.randomUUID(), // ⚠️ usar uuid o nanoid si lo necesitas más robusto
+    id: crypto.randomUUID(),
     name: "",
     email: "",
     role: "",
