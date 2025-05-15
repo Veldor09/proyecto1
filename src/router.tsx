@@ -32,7 +32,7 @@ const homeRoute = createRoute({
   },
 });
 
-const aliadosRoute = createRoute({
+const AliadosRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/aliados",
   component: AliadosPage,
@@ -67,7 +67,7 @@ const loginRoute = createRoute({
 
 rootRoute.addChildren([
   homeRoute,
-  aliadosRoute,
+  AliadosRoute,
   proyectosRoute,
   voluntariosRoute,
   loginRoute,
