@@ -3,58 +3,64 @@ import { useMemo } from "react";
 import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import EditProyectoButton from "./EditProyectoButton";
 import DeleteProyectoButton from "./DeleteProyectoButton";
+import AddProyectoButton from "./AddProyectoButton"; // ✅ Importación faltante
+import { useAuth } from "../../Context/AuthContext";
 
 
 const ProyectoList = () => {
+  const { user } = useAuth(); // 👈
   const { data, isLoading, isError, error } = useProyectos();
 
   const proyectos = useMemo(() => data ?? [], [data]);
 
   const columns = useMemo(
-  () => [
-    {
-      header: 'Nombre',
-      accessorKey: 'nombre',
-    },
-    {
-      header: 'Ubicación',
-      accessorKey: 'ubicacion',
-    },
-    {
-      header: 'Fondos',
-      accessorKey: 'tieneFondos',
-      cell: ({ row }: any) => (row.original.tieneFondos ? "Sí" : "No"),
-    },
-    {
-      header: 'Aliados',
-      accessorKey: 'aliados',
-      cell: ({ row }: any) =>
-        Array.isArray(row.original.aliados) && row.original.aliados.length > 0
-          ? row.original.aliados.join(", ")
-          : "Ninguno",
-    },
-    {
-      header: 'Voluntarios',
-      accessorKey: 'voluntarios',
-      cell: ({ row }: any) =>
-        Array.isArray(row.original.voluntarios) && row.original.voluntarios.length > 0
-          ? row.original.voluntarios.join(", ")
-          : "Ninguno",
-    },
-    {
-      header: 'Acciones',
-      id: 'acciones',
-      cell: ({ row }: any) => (
-        <div className="flex space-x-2">
-          <EditProyectoButton proyecto={row.original} />
-          <DeleteProyectoButton id={row.original.id} />
-        </div>
-      ),
-    },
-  ],
-  []
-);
-
+    () => [
+      {
+        header: "Nombre",
+        accessorKey: "nombre",
+      },
+      {
+        header: "Ubicación",
+        accessorKey: "ubicacion",
+      },
+      {
+        header: "Fondos",
+        accessorKey: "tieneFondos",
+        cell: ({ row }: any) => (row.original.tieneFondos ? "Sí" : "No"),
+      },
+      {
+        header: "Aliados",
+        accessorKey: "aliados",
+        cell: ({ row }: any) =>
+          Array.isArray(row.original.aliados) && row.original.aliados.length > 0
+            ? row.original.aliados.join(", ")
+            : "Ninguno",
+      },
+      {
+        header: "Voluntarios",
+        accessorKey: "voluntarios",
+        cell: ({ row }: any) =>
+          Array.isArray(row.original.voluntarios) && row.original.voluntarios.length > 0
+            ? row.original.voluntarios.join(", ")
+            : "Ninguno",
+      },
+      {
+        header: "Acciones",
+        id: "acciones",
+        cell: ({ row }: any) => (
+          <div className="flex space-x-2">
+            {user?.role === "admin" && (
+              <>
+                <EditProyectoButton proyecto={row.original} />
+                <DeleteProyectoButton id={row.original.id} />
+              </>
+            )}
+          </div>
+        ),
+      },
+    ],
+    [user]
+  );
 
   const table = useReactTable({
     data: proyectos,
@@ -68,6 +74,14 @@ const ProyectoList = () => {
   return (
     <div className="p-4 bg-gray-100 min-h-screen">
       <h2 className="text-2xl font-bold mb-4">Proyectos</h2>
+
+      {/* ✅ Mostrar botón agregar solo si es admin */}
+      {user?.role === "admin" && (
+        <div className="mb-4">
+          <AddProyectoButton />
+        </div>
+      )}
+
       <div className="overflow-x-auto bg-white rounded shadow">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">

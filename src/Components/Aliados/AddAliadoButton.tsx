@@ -1,9 +1,13 @@
 import { useState } from "react";
 import GenericModal from "../GenericModal";
 import AddAliadoForm from "./AddAliadoForm";
+import { useAuth } from "../../Context/AuthContext";
 
 const AddAliadoButton = () => {
+  const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  if (user?.role !== "admin" && user?.role !== "aliado") return null;
 
   return (
     <>

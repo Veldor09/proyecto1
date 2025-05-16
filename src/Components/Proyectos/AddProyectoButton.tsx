@@ -1,9 +1,14 @@
 import { useState } from "react";
 import GenericModal from "../GenericModal";
 import AddProyectoForm from "./AddProyectoForm";
+import { useAuth } from "../../Context/AuthContext";
 
 const AddProyectoButton = () => {
+  const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // ❌ Ocultar botón si no es admin
+  if (user?.role !== "admin") return null;
 
   return (
     <>

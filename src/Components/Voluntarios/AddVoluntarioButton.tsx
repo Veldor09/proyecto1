@@ -1,9 +1,13 @@
 import { useState } from "react";
 import GenericModal from "../GenericModal";
 import AddVoluntarioForm from "./AddVoluntarioForm";
+import { useAuth } from "../../Context/AuthContext"; // 👈
 
 const AddVoluntarioButton = () => {
+  const { user } = useAuth(); // 👈
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  if (user?.role !== "admin" && user?.role !== "voluntario") return null; // ⛔ No permitido
 
   return (
     <>

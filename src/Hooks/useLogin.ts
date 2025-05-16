@@ -9,19 +9,19 @@ export const useLogin = () => {
   } => {
     const users = [
       {
-        email: 'admin@demo.com',
+        email: 'admin@gmail.com',
         password: '12345',
         name: 'Administrador',
         role: 'admin',
       },
       {
-        email: 'useraliado@example.com',
+        email: 'aliado@gmail.com',
         password: '1234',
         name: 'Aliado Ejemplo',
         role: 'aliado',
       },
       {
-        email: 'uservoluntario@example.com',
+        email: 'voluntario@gmail.com',
         password: '1234',
         name: 'Voluntario Ejemplo',
         role: 'voluntario',
