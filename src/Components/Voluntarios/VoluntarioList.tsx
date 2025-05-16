@@ -1,8 +1,14 @@
 import { useMemo } from 'react';
-import { useReactTable, getCoreRowModel, flexRender, Row } from '@tanstack/react-table';
+import {
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+  Row,
+} from '@tanstack/react-table';
 import { useVoluntarios } from '../../Services/VoluntariosServices';
 import EditVoluntarioButton from './EditVoluntarioButton';
 import HideVoluntarioButton from './DeleteVoluntarioButton';
+import { useAuth } from '../../Context/AuthContext'; // 👈
 
 interface Voluntario {
   id: string;
@@ -13,6 +19,7 @@ interface Voluntario {
 }
 
 const VoluntarioList = () => {
+  const { user } = useAuth(); // 👈
   const { data, isLoading, isError, error } = useVoluntarios();
 
   const voluntarios = useMemo(
@@ -31,13 +38,17 @@ const VoluntarioList = () => {
         id: 'acciones',
         cell: ({ row }: { row: Row<Voluntario> }) => (
           <div className="flex space-x-2">
-            <EditVoluntarioButton voluntario={row.original} />
-            <HideVoluntarioButton id={row.original.id} />
+            {(user?.role === 'admin' || user?.role === 'voluntario') && (
+              <EditVoluntarioButton voluntario={row.original} />
+            )}
+            {user?.role === 'admin' && (
+              <HideVoluntarioButton id={row.original.id} />
+            )}
           </div>
         ),
       },
     ],
-    []
+    [user]
   );
 
   const table = useReactTable({
