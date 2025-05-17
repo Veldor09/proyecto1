@@ -4,10 +4,10 @@ import axios from 'axios';
 import { hash } from 'bcryptjs';
 import { useNavigate } from '@tanstack/react-router';
 
-const API_KEY = '$2a$10$1WE9CA71m8Ipze4nUPEUSORtrEj2XD95J9mSOlGqY53PTrY4mdanW';
+const API_KEY = '$2a$10$JMHiHuAzVzegUTuogZLRq.GRbcBWpFNpkBJ2kgEK4SQ9LQYUxAF0K';
 const BIN_ID_USUARIOS = '682806fd8960c979a59b20ad';
 const BIN_ID_VOLUNTARIOS = '6828075f8a456b79669f617b';
-const BIN_ID_ALIADOS = '68250c638561e97a50140565';
+const BIN_ID_ALIADOS = '682807468a456b79669f616e';
 
 const RegisterPage = () => {
   const [form, setForm] = useState({
@@ -31,6 +31,7 @@ const RegisterPage = () => {
       const hashedPassword = await hash(form.password, 10);
       const id = crypto.randomUUID();
 
+      // 1. Guardar en bin privado (usuarios)
       const resUsuarios = await axios.get(`https://api.jsonbin.io/v3/b/${BIN_ID_USUARIOS}`, {
         headers: { 'X-Master-Key': API_KEY },
       });
@@ -55,34 +56,33 @@ const RegisterPage = () => {
         }
       );
 
-      if (form.role !== 'admin') {
-        const binPublico =
-          form.role === 'voluntario' ? BIN_ID_VOLUNTARIOS : BIN_ID_ALIADOS;
+      // 2. Guardar en bin público según el rol
+      const binPublico = form.role === 'voluntario' ? BIN_ID_VOLUNTARIOS : BIN_ID_ALIADOS;
+      const clave = form.role === 'voluntario' ? 'voluntarios' : 'aliados';
 
-        const resPublico = await axios.get(`https://api.jsonbin.io/v3/b/${binPublico}`, {
-          headers: { 'X-Master-Key': API_KEY },
-        });
+      const resPublico = await axios.get(`https://api.jsonbin.io/v3/b/${binPublico}`, {
+        headers: { 'X-Master-Key': API_KEY },
+      });
 
-        const datosPublicos = resPublico.data.record || [];
+      const datos = resPublico.data.record?.[clave] || [];
 
-        const usuarioPublico = {
-          id,
-          name: form.name,
-          email: form.email,
-          role: form.role,
-        };
+      const usuarioPublico = {
+        id,
+        name: form.name,
+        email: form.email,
+        role: form.role,
+      };
 
-        await axios.put(
-          `https://api.jsonbin.io/v3/b/${binPublico}`,
-          [...datosPublicos, usuarioPublico],
-          {
-            headers: {
-              'X-Master-Key': API_KEY,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-      }
+      await axios.put(
+        `https://api.jsonbin.io/v3/b/${binPublico}`,
+        { [clave]: [...datos, usuarioPublico] },
+        {
+          headers: {
+            'X-Master-Key': API_KEY,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       alert('Registro exitoso');
       navigate({ to: '/login' });
@@ -137,7 +137,7 @@ const RegisterPage = () => {
         >
           <option value="voluntario">Voluntario</option>
           <option value="aliado">Aliado</option>
-          <option value="admin">Administrador</option>
+          {/* Administrador eliminado del formulario */}
         </select>
         <button
           type="submit"
