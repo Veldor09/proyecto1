@@ -13,9 +13,9 @@ export interface Proyecto {
   hidden?: boolean;
 }
 
-const BIN_ID = "68250c788561e97a50140573";
+const BIN_ID = "682807228960c979a59b20be";
 const PROYECTOS_API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-const API_KEY = "$2a$10$1WE9CA71m8Ipze4nUPEUSORtrEj2XD95J9mSOlGqY53PTrY4mdanW";
+const API_KEY = "$2a$10$JMHiHuAzVzegUTuogZLRq.GRbcBWpFNpkBJ2kgEK4SQ9LQYUxAF0K";
 
 const HEADERS = {
   "X-Access-Key": API_KEY,

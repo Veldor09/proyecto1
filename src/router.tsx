@@ -5,13 +5,15 @@ import {
   createRouter,
   createBrowserHistory,
   redirect,
-} from "@tanstack/react-router";
-import Layout from "./Components/Layout";
-import HomePage from "./Pages/HomePage";
-import AliadosPage from "./Pages/AliadosPage";
-import ProyectosPage from "./Pages/ProyectosPage";
-import VoluntariosPage from "./Pages/VoluntariosPage";
-import LoginPage from "./Pages/Login.Page";
+  NotFoundRoute
+} from '@tanstack/react-router';
+
+import Layout from './Components/Layout';
+import HomePage from './Pages/HomePage';
+import AliadosPage from './Pages/AliadosPage';
+import ProyectosPage from './Pages/ProyectosPage';
+import VoluntariosPage from './Pages/VoluntariosPage';
+import LoginPage from './Pages/Login.Page';
 
 export type RouterContext = {
   auth: {
@@ -20,58 +22,70 @@ export type RouterContext = {
 };
 
 export const rootRoute = createRootRouteWithContext<RouterContext>()({
-  component: Layout, // ✅ ahora estás usando el default import real
+  component: Layout,
 });
 
+// Página 404 personalizada
+const notFoundRoute = new NotFoundRoute({
+  getParentRoute: () => rootRoute,
+  component: () => <div style={{ padding: 50 }}>Página no encontrada</div>,
+});
 
 const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/",
+  path: '/',
   component: HomePage,
   beforeLoad: ({ context }) => {
-    if (!context.auth.user) throw redirect({ to: "/login" });
+    const user = context.auth.user;
+    if (!user) throw redirect({ to: '/login' });
+
+    // Redirección según rol
+    if (user.role === 'admin') throw redirect({ to: '/proyectos' });
+    if (user.role === 'aliado') throw redirect({ to: '/aliados' });
+    if (user.role === 'voluntario') throw redirect({ to: '/voluntarios' });
   },
 });
 
-const AliadosRoute = createRoute({
+const aliadosRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/aliados",
+  path: '/aliados',
   component: AliadosPage,
   beforeLoad: ({ context }) => {
-    if (!context.auth.user) throw redirect({ to: "/login" });
+    if (!context.auth.user) throw redirect({ to: '/login' });
   },
 });
 
 const proyectosRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/proyectos",
+  path: '/proyectos',
   component: ProyectosPage,
   beforeLoad: ({ context }) => {
-    if (!context.auth.user) throw redirect({ to: "/login" });
+    if (!context.auth.user) throw redirect({ to: '/login' });
   },
 });
 
 const voluntariosRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/voluntarios",
+  path: '/voluntarios',
   component: VoluntariosPage,
   beforeLoad: ({ context }) => {
-    if (!context.auth.user) throw redirect({ to: "/login" });
+    if (!context.auth.user) throw redirect({ to: '/login' });
   },
 });
 
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/login",
+  path: '/login',
   component: LoginPage,
 });
 
 rootRoute.addChildren([
   homeRoute,
-  AliadosRoute,
+  aliadosRoute,
   proyectosRoute,
   voluntariosRoute,
   loginRoute,
+  notFoundRoute,
 ]);
 
 export const router = createRouter({
@@ -79,7 +93,7 @@ export const router = createRouter({
   history: createBrowserHistory(),
   context: {
     auth: {
-      user: undefined
-    }
-  }
+      user: undefined,
+    },
+  },
 });

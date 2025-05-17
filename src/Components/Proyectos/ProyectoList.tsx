@@ -3,12 +3,12 @@ import { useMemo } from "react";
 import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import EditProyectoButton from "./EditProyectoButton";
 import DeleteProyectoButton from "./DeleteProyectoButton";
-import AddProyectoButton from "./AddProyectoButton"; // ✅ Importación faltante
+import AddProyectoButton from "./AddProyectoButton"; //  
 import { useAuth } from "../../Context/AuthContext";
 
 
 const ProyectoList = () => {
-  const { user } = useAuth(); // 👈
+  const { user } = useAuth(); // 
   const { data, isLoading, isError, error } = useProyectos();
 
   const proyectos = useMemo(() => data ?? [], [data]);
@@ -75,7 +75,7 @@ const ProyectoList = () => {
     <div className="p-4 bg-gray-100 min-h-screen">
       <h2 className="text-2xl font-bold mb-4">Proyectos</h2>
 
-      {/* ✅ Mostrar botón agregar solo si es admin */}
+      {/*  Mostrar botón agregar solo si es admin */}
       {user?.role === "admin" && (
         <div className="mb-4">
           <AddProyectoButton />

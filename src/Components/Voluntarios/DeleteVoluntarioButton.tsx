@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useAuth } from "../../Context/AuthContext"; // 👈 Importa el contexto
+import { useAuth } from "../../Context/AuthContext"; // Importa el contexto
 
 interface Props {
   id: string;
@@ -16,9 +16,9 @@ const HEADERS = {
 
 const DeleteVoluntarioButton = ({ id }: Props) => {
   const queryClient = useQueryClient();
-  const { user } = useAuth(); // 👈 Aquí obtienes el usuario y su rol
+  const { user } = useAuth(); // Aquí obtienes el usuario y su rol
 
-  // 👇 Si no es admin, no mostrar el botón
+  //  Si no es admin, no mostrar el botón
   if (user?.role !== "admin") return null;
 
   const handleDelete = async () => {
