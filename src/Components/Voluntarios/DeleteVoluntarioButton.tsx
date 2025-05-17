@@ -6,7 +6,7 @@ interface Props {
   id: string;
 }
 
-const BIN_ID = "68250c3e8561e97a50140550";
+const BIN_ID = "6828075f8a456b79669f617b";
 const VOLUNTARIOS_API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 const API_KEY = "$2a$10$1WE9CA71m8Ipze4nUPEUSORtrEj2XD95J9mSOlGqY53PTrY4mdanW";
 const HEADERS = {
