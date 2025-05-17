@@ -9,9 +9,9 @@ export interface Aliado {
 }
 
 // Configuración de la API
-const BIN = '68250c638561e97a50140565';
+const BIN = '682807468a456b79669f616e';
 const ALIADOS_API_URL = `https://api.jsonbin.io/v3/b/${BIN}`;
-const API_KEY = '$2a$10$1WE9CA71m8Ipze4nUPEUSORtrEj2XD95J9mSOlGqY53PTrY4mdanW';
+const API_KEY = '$2a$10$JMHiHuAzVzegUTuogZLRq.GRbcBWpFNpkBJ2kgEK4SQ9LQYUxAF0K';
 
 const HEADERS = {
   'X-Access-Key': API_KEY,

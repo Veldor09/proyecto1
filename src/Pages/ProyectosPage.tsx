@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import ProyectoList from "../Components/Proyectos/ProyectoList";
-import AddProyectoButton from "../Components/Proyectos/AddProyectoButton";
 import Login from "../Components/Login";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -16,7 +15,6 @@ const ProyectosPage = () => {
         <QueryClientProvider client={queryClient}>
           <div className="p-4">
             <h2 className="text-2xl font-semibold mb-4">Gestión de Proyectos</h2>
-            <AddProyectoButton />
             <ProyectoList />
           </div>
         </QueryClientProvider>

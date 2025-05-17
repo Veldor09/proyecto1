@@ -10,9 +10,9 @@ export interface Voluntario {
 }
 
 // 2. Constantes de configuración
-const BIN = '68250c3e8561e97a50140550';
+const BIN = '6828075f8a456b79669f617b';
 const VOLUNTARIOS_API_URL = `https://api.jsonbin.io/v3/b/${BIN}`;
-const API_KEY = '$2a$10$1WE9CA71m8Ipze4nUPEUSORtrEj2XD95J9mSOlGqY53PTrY4mdanW';
+const API_KEY = '$2a$10$JMHiHuAzVzegUTuogZLRq.GRbcBWpFNpkBJ2kgEK4SQ9LQYUxAF0K';
 
 const HEADERS = {
   'X-Access-Key': API_KEY,

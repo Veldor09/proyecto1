@@ -12,16 +12,21 @@ const Login = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    setLoading(true);
+    setError('');
     const email = emailRef.current?.value || '';
     const password = passwordRef.current?.value || '';
 
-    const result = login(email, password);
+    const result = await login(email, password);
+
+    setLoading(false);
 
     if (result.success && result.user) {
-      loginToContext(result.user); // Guarda el usuario en contexto
-      navigate({ to: '/' }); // Redirige al home u otra página
+      loginToContext(result.user);
+      navigate({ to: '/' });
     } else {
       setError('Credenciales incorrectas');
     }
@@ -45,9 +50,10 @@ const Login = () => {
         />
         <button
           onClick={handleLogin}
-          className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors"
+          disabled={loading}
+          className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
         >
-          Ingresar
+          {loading ? 'Cargando...' : 'Ingresar'}
         </button>
         {error && <p className="text-red-500 text-sm">{error}</p>}
       </div>

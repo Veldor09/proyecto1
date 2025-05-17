@@ -8,7 +8,7 @@ import {
 import { useVoluntarios } from '../../Services/VoluntariosServices';
 import EditVoluntarioButton from './EditVoluntarioButton';
 import HideVoluntarioButton from './DeleteVoluntarioButton';
-import { useAuth } from '../../Context/AuthContext'; // 👈
+import { useAuth } from '../../Context/AuthContext'; // 
 
 interface Voluntario {
   id: string;
@@ -19,7 +19,7 @@ interface Voluntario {
 }
 
 const VoluntarioList = () => {
-  const { user } = useAuth(); // 👈
+  const { user } = useAuth(); // 
   const { data, isLoading, isError, error } = useVoluntarios();
 
   const voluntarios = useMemo(
