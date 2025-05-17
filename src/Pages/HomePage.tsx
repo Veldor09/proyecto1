@@ -46,9 +46,32 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-blue-900 text-white py-6 text-center mt-auto">
-        <p className="text-sm">&copy; 2025 FUNDECODES. Todos los derechos reservados.</p>
-      </footer>
+<footer className="bg-gray-900 text-white py-8 px-4 mt-auto">
+  <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-left">
+    {/* Columna 1: Sobre nosotros */}
+    <div>
+      <h3 className="text-lg font-semibold mb-2">Sobre FUNDECODES</h3>
+      <p>
+        Fundación para el Desarrollo Comunitario y Social. Promovemos la colaboración entre instituciones y comunidades a través de soluciones tecnológicas innovadoras.
+      </p>
+    </div>
+
+    {/* Columna 2: Contacto */}
+    <div>
+      <h3 className="text-lg font-semibold mb-2">Contacto</h3>
+      <ul>
+        <li>📧 fundecodeshojancha@gmail.com</li>
+        <li>📞 +506 2659-8061</li>
+        <li>📍 3H8M+924, Guanacaste, Hojancha, Barrio Alto del Cementerio</li>
+      </ul>
+    </div>
+  </div>
+
+  {/* Línea inferior */}
+  <div className="border-t border-white mt-6 pt-4 text-center text-xs">
+    &copy; 2025 FUNDECODES. Todos los derechos reservados.
+  </div>
+</footer>
     </div>
   );
 };
