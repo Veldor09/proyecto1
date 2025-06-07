@@ -1,24 +1,24 @@
 // src/Components/Aliados/EditAliadoForm.tsx
 import { useState } from "react";
-import { updateAliado } from "../../Services/AliadosServices";
+import { updateVoluntario } from "../../Services/VoluntariosServices";
 
-type Aliado = {
+type Voluntario = {
   id: string;
   name: string;
   email: string;
   role: string;
 };
 
-type EditAliadoFormProps = {
-  aliado: Aliado;
+type EditVoluntarioFormProps = {
+  voluntario: Voluntario;
   onClose: () => void;
   onSave: () => void;
 };
 
-const EditAliadoForm = ({ aliado, onClose, onSave }: EditAliadoFormProps) => {
-  const [name, setName] = useState(aliado.name);
-  const [email, setEmail] = useState(aliado.email);
-  const [role, setRole] = useState(aliado.role);
+const EditVoluntarioForm = ({ voluntario, onClose, onSave }: EditVoluntarioFormProps) => {
+  const [name, setName] = useState(voluntario.name);
+  const [email, setEmail] = useState(voluntario.email);
+  const [role, setRole] = useState(voluntario.role);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -27,12 +27,13 @@ const EditAliadoForm = ({ aliado, onClose, onSave }: EditAliadoFormProps) => {
     setLoading(true);
     setError("");
 
+  
     try {
-      await updateAliado({ ...aliado, name, email, role });
+      await updateVoluntario({ ...voluntario, name, email, role });
       onSave(); // Refresca la tabla y cierra el modal
     } catch (err) {
       console.error(err);
-      setError("Hubo un error al actualizar el aliado.");
+      setError("Hubo un error al actualizar el voluntario.");
     } finally {
       setLoading(false);
     }
@@ -41,7 +42,7 @@ const EditAliadoForm = ({ aliado, onClose, onSave }: EditAliadoFormProps) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Editar Aliado</h2>
+        <h2 className="text-xl font-bold mb-4">Editar Voluntario</h2>
         {error && <div className="text-red-500 mb-2">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -100,4 +101,4 @@ const EditAliadoForm = ({ aliado, onClose, onSave }: EditAliadoFormProps) => {
   );
 };
 
-export default EditAliadoForm;
+export default EditVoluntarioForm;

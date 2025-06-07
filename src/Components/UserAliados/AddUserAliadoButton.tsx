@@ -1,13 +1,14 @@
+// Components/UserAliados/AddUserAliadoButton.tsx
 import { useState } from "react";
 import GenericModal from "../GenericModal";
-import AddAliadoForm from "./AddAliadoForm";
+import AddUserAliadoForm from "./AddUserAliadoForm";
 import { useAuth } from "../../Context/AuthContext";
 
-const AddAliadoButton = () => {
+const AddUserAliadoButton = () => {
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  if (user?.role !== "Administrador") return null;
+  if (user?.role !== "Administrador" && user?.role !== "Aliado") return null;
 
   return (
     <>
@@ -21,12 +22,12 @@ const AddAliadoButton = () => {
       <GenericModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Agregar nuevo aliado"
+        title="Agregar nuevo Aliado"
       >
-        <AddAliadoForm onClose={() => setIsModalOpen(false)} />
+        <AddUserAliadoForm onClose={() => setIsModalOpen(false)} />
       </GenericModal>
     </>
   );
 };
 
-export default AddAliadoButton;
+export default AddUserAliadoButton;

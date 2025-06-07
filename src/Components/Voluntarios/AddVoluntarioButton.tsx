@@ -1,18 +1,22 @@
 import { useState } from "react";
 import GenericModal from "../GenericModal";
 import AddVoluntarioForm from "./AddVoluntarioForm";
-import { useAuth } from "../../Context/AuthContext"; 
+import { useAuth } from "../../Context/AuthContext";
 
 const AddVoluntarioButton = () => {
-  const { user } = useAuth(); 
+  const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  if (user?.role !== "admin" && user?.role !== "voluntario") return null; 
+  // Solo Administradores y Voluntarios pueden ver este botón
+  if (user?.role !== "Administrador") return null;
+
+  const handleOpen = () => setIsModalOpen(true);
+  const handleClose = () => setIsModalOpen(false);
 
   return (
     <>
       <button
-        onClick={() => setIsModalOpen(true)}
+        onClick={handleOpen}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
       >
         + Agregar Voluntario
@@ -20,10 +24,10 @@ const AddVoluntarioButton = () => {
 
       <GenericModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleClose}
         title="Agregar nuevo voluntario"
       >
-        <AddVoluntarioForm onClose={() => setIsModalOpen(false)} />
+        <AddVoluntarioForm onClose={handleClose} />
       </GenericModal>
     </>
   );

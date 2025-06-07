@@ -1,50 +1,33 @@
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import axios from 'axios';
+import { Voluntario } from '../Types/VoluntarioTypes';
+import { useQuery } from '@tanstack/react-query';
 
-// 1. Definir la interfaz Voluntario
-export interface Voluntario {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
+const VOLUNTARIOS_API_URL = 'https://localhost:7003/api/Voluntarios';
 
-// 2. Constantes de configuración
-const BIN = '6828075f8a456b79669f617b';
-const VOLUNTARIOS_API_URL = `https://api.jsonbin.io/v3/b/${BIN}`;
-const API_KEY = '$2a$10$1WE9CA71m8Ipze4nUPEUSORtrEj2XD95J9mSOlGqY53PTrY4mdanW';
-
-const HEADERS = {
-  'X-Access-Key': API_KEY,
-  'Content-Type': 'application/json',
-};
-
-// 3. Obtener voluntarios
-const fetchVoluntarios = async (): Promise<Voluntario[]> => {
+// 1. Obtener todos los voluntarios
+export const fetchVoluntarios = async (): Promise<Voluntario[]> => {
   try {
-    const response = await axios.get(VOLUNTARIOS_API_URL, { headers: HEADERS });
-    return response.data.record.voluntarios || [];
+    const response = await axios.get(VOLUNTARIOS_API_URL);
+    console.log("Respuesta de voluntarios:", response.data);
+    return response.data; // Se espera un array plano desde el backend
   } catch (error) {
     console.error('Error al obtener voluntarios:', error);
     return [];
   }
 };
 
-// 4. Agregar voluntario
-export const addVoluntario = async (newVoluntario: Voluntario): Promise<void> => {
+// 2. Agregar un nuevo voluntario
+export const addVoluntario = async (newVoluntario: Voluntario): Promise<Voluntario> => {
   try {
-    const response = await axios.get(VOLUNTARIOS_API_URL, { headers: HEADERS });
-    const current: Voluntario[] = response.data.record.voluntarios || [];
-    const updated = [...current, newVoluntario];
-
-    await axios.put(VOLUNTARIOS_API_URL, { voluntarios: updated }, { headers: HEADERS });
+    const response = await axios.post(VOLUNTARIOS_API_URL, newVoluntario);
+    return response.data;
   } catch (error) {
     console.error('Error al agregar voluntario:', error);
     throw error;
   }
 };
 
-// 5. Hook personalizado para React Query
+// 3. Hook de React Query para obtener voluntarios
 export const useVoluntarios = () => {
   return useQuery<Voluntario[]>({
     queryKey: ['voluntarios'],
@@ -54,19 +37,23 @@ export const useVoluntarios = () => {
   });
 };
 
-// 6. Editar voluntario existente
-export const updateVoluntario = async (updatedVoluntario: Voluntario): Promise<void> => {
+// 4. Actualizar voluntario existente
+export const updateVoluntario = async (updatedVoluntario: Voluntario): Promise<Voluntario> => {
   try {
-    const response = await axios.get(VOLUNTARIOS_API_URL, { headers: HEADERS });
-    const current: Voluntario[] = response.data.record.voluntarios || [];
-
-    const updated = current.map((v: Voluntario) =>
-      v.id === updatedVoluntario.id ? updatedVoluntario : v
-    );
-
-    await axios.put(VOLUNTARIOS_API_URL, { voluntarios: updated }, { headers: HEADERS });
+    const response = await axios.put(`${VOLUNTARIOS_API_URL}/${updatedVoluntario.id}`, updatedVoluntario);
+    return response.data;
   } catch (error) {
     console.error('Error al actualizar voluntario:', error);
+    throw error;
+  }
+};
+
+// 5. Ocultar (eliminar) voluntario
+export const deleteVoluntario = async (id: string): Promise<void> => {
+  try {
+    await axios.delete(`${VOLUNTARIOS_API_URL}/${id}`);
+  } catch (error) {
+    console.error('Error al eliminar voluntario:', error);
     throw error;
   }
 };

@@ -1,15 +1,14 @@
-// src/Components/Login.tsx
 import { useRef, useState } from 'react';
-import { useLogin } from '../Hooks/useLogin';
+import { useAuthService } from '../Hooks/useAuthService';
 import { useAuth } from '../Context/AuthContext';
 import { useNavigate } from '@tanstack/react-router';
 
 const Login = () => {
   const { login: loginToContext } = useAuth();
-  const { login } = useLogin();
+  const { login } = useAuthService();
   const navigate = useNavigate();
 
-  const emailRef = useRef<HTMLInputElement>(null);
+  const idRef = useRef<HTMLInputElement>(null); // Cambiado de emailRef a idRef
   const passwordRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,10 +16,12 @@ const Login = () => {
   const handleLogin = async () => {
     setLoading(true);
     setError('');
-    const email = emailRef.current?.value || '';
+    const id = idRef.current?.value || '';
     const password = passwordRef.current?.value || '';
 
-    const result = await login(email, password);
+    // puedes usar aquí un role fijo o elegirlo desde un select
+    const ROL: "Administrador" | "Aliado" | "Voluntario" = "Voluntario";
+    const result = await login(id, password, ROL);
 
     setLoading(false);
 
@@ -37,9 +38,9 @@ const Login = () => {
       <h2 className="text-3xl font-bold text-center mb-6">Login</h2>
       <div className="flex flex-col items-center bg-white p-8 rounded-2xl shadow-lg w-80 mx-auto space-y-4">
         <input
-          type="email"
-          placeholder="Correo"
-          ref={emailRef}
+          type="text"
+          placeholder="ID de usuario"
+          ref={idRef}
           className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
         <input

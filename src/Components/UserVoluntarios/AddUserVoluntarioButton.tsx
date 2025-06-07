@@ -1,13 +1,14 @@
+// Components/UserVoluntarios/AddUserVoluntarioButton.tsx
 import { useState } from "react";
 import GenericModal from "../GenericModal";
-import AddAliadoForm from "./AddAliadoForm";
+import AddUserVoluntarioForm from "./AddUserVoluntarioForm";
 import { useAuth } from "../../Context/AuthContext";
 
-const AddAliadoButton = () => {
+const AddUserVoluntarioButton = () => {
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  if (user?.role !== "Administrador") return null;
+  if (user?.role !== "Administrador" && user?.role !== "Voluntario") return null;
 
   return (
     <>
@@ -15,18 +16,18 @@ const AddAliadoButton = () => {
         onClick={() => setIsModalOpen(true)}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
       >
-        + Agregar Aliado
+        + Agregar Voluntario
       </button>
 
       <GenericModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Agregar nuevo aliado"
+        title="Agregar nuevo Voluntario"
       >
-        <AddAliadoForm onClose={() => setIsModalOpen(false)} />
+        <AddUserVoluntarioForm onClose={() => setIsModalOpen(false)} />
       </GenericModal>
     </>
   );
 };
 
-export default AddAliadoButton;
+export default AddUserVoluntarioButton;

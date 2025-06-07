@@ -1,7 +1,7 @@
-// src/Components/Aliados/HiddenAliados.ts
-const STORAGE_KEY = "hiddenAliados";
+// src/Components/Aliados/HiddenVoluntarios.ts
+const STORAGE_KEY = "hiddenVoluntarios";
 
-export const getHiddenAliados = (): string[] => {
+export const getHiddenVoluntarios = (): string[] => {
   const json = localStorage.getItem(STORAGE_KEY);
   if (!json) return [];
   try {
@@ -13,7 +13,7 @@ export const getHiddenAliados = (): string[] => {
 };
 
 export const hideAliado = (Id: string) => {
-  const hidden = getHiddenAliados();
+  const hidden = getHiddenVoluntarios();
   if (!hidden.includes(Id)) {
     hidden.push(Id);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(hidden));

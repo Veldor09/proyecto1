@@ -3,26 +3,22 @@ import { useMemo } from "react";
 import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import EditProyectoButton from "./EditProyectoButton";
 import DeleteProyectoButton from "./DeleteProyectoButton";
-import AddProyectoButton from "./AddProyectoButton"; //  
+import AddProyectoButton from "./AddProyectoButton";
 import { useAuth } from "../../Context/AuthContext";
 
-
 const ProyectoList = () => {
-  const { user } = useAuth(); // 
+  const { user } = useAuth();
   const { data, isLoading, isError, error } = useProyectos();
 
-  const proyectos = useMemo(() => data ?? [], [data]);
+  const proyectos = useMemo(
+    () => (data ?? []).filter((p) => !p.hidden), // 👈 Filtrar ocultos
+    [data]
+  );
 
   const columns = useMemo(
     () => [
-      {
-        header: "Nombre",
-        accessorKey: "nombre",
-      },
-      {
-        header: "Ubicación",
-        accessorKey: "ubicacion",
-      },
+      { header: "Nombre", accessorKey: "nombre" },
+      { header: "Ubicación", accessorKey: "ubicacion" },
       {
         header: "Fondos",
         accessorKey: "tieneFondos",
@@ -30,26 +26,22 @@ const ProyectoList = () => {
       },
       {
         header: "Aliados",
-        accessorKey: "aliados",
+        accessorKey: "Aliados",
         cell: ({ row }: any) =>
-          Array.isArray(row.original.aliados) && row.original.aliados.length > 0
-            ? row.original.aliados.join(", ")
-            : "Ninguno",
+          row.original.aliados?.length > 0 ? row.original.aliados.join(", ") : "Ninguno",
       },
       {
         header: "Voluntarios",
-        accessorKey: "voluntarios",
+        accessorKey: "Voluntarios",
         cell: ({ row }: any) =>
-          Array.isArray(row.original.voluntarios) && row.original.voluntarios.length > 0
-            ? row.original.voluntarios.join(", ")
-            : "Ninguno",
+          row.original.voluntarios?.length > 0 ? row.original.voluntarios.join(", ") : "Ninguno",
       },
       {
         header: "Acciones",
         id: "acciones",
         cell: ({ row }: any) => (
           <div className="flex space-x-2">
-            {user?.role === "admin" && (
+            {user?.role === "Administrador" && (
               <>
                 <EditProyectoButton proyecto={row.original} />
                 <DeleteProyectoButton id={row.original.id} />
@@ -75,8 +67,7 @@ const ProyectoList = () => {
     <div className="p-4 bg-gray-100 min-h-screen">
       <h2 className="text-2xl font-bold mb-4">Proyectos</h2>
 
-      {/*  Mostrar botón agregar solo si es admin */}
-      {user?.role === "admin" && (
+      {user?.role === "Administrador" && (
         <div className="mb-4">
           <AddProyectoButton />
         </div>

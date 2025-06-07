@@ -6,27 +6,26 @@ import {
   ColumnDef,
   Row,
 } from "@tanstack/react-table";
-import { useAliados } from "../../Services/AliadosServices";
+import { useAliados, deleteAliado } from "../../Services/AliadosServices";
 import EditAliadoForm from "./EditAliadoForm";
-import { getHiddenAliados, hideAliado } from "./HiddenAliados";
 import { useAuth } from "../../Context/AuthContext";
 
 interface Aliado {
   id: string;
   name: string;
   email: string;
+  role: string;
+  hidden?: boolean;
 }
 
 const AliadoList = () => {
   const { user } = useAuth();
   const { data, isLoading, isError, refetch } = useAliados();
-  const [version, setVersion] = useState(0);
   const [selectedAliado, setSelectedAliado] = useState<Aliado | null>(null);
 
   const aliados = useMemo(() => {
-    const hiddenIds = getHiddenAliados();
-    return (data ?? []).filter((aliado) => !hiddenIds.includes(aliado.id));
-  }, [data, version]);
+    return (data ?? []).filter((aliado) => !aliado.hidden);
+  }, [data]);
 
   const columns = useMemo<ColumnDef<Aliado>[]>(() => [
     { header: "ID", accessorKey: "id" },
@@ -37,7 +36,7 @@ const AliadoList = () => {
       id: "acciones",
       cell: ({ row }: { row: Row<Aliado> }) => (
         <div className="flex gap-2">
-          {(user?.role === "admin" || user?.role === "aliado") && (
+          {(user?.role === "Administrador") && (
             <button
               onClick={() => setSelectedAliado(row.original)}
               className="text-blue-600 hover:underline"
@@ -45,11 +44,11 @@ const AliadoList = () => {
               Editar
             </button>
           )}
-          {user?.role === "admin" && (
+          {user?.role === "Administrador" && (
             <button
-              onClick={() => {
-                hideAliado(row.original.id);
-                setVersion((v) => v + 1);
+              onClick={async () => {
+                await deleteAliado(row.original.id);
+                refetch();
               }}
               className="text-red-600 hover:underline"
             >
@@ -59,7 +58,7 @@ const AliadoList = () => {
         </div>
       ),
     },
-  ], [user]);
+  ], [user, refetch]);
 
   const table = useReactTable({
     data: aliados,
@@ -67,13 +66,8 @@ const AliadoList = () => {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  if (isLoading) {
-    return <div className="p-4">Cargando aliados...</div>;
-  }
-
-  if (isError) {
-    return <div className="p-4 text-red-500">Error al cargar aliados</div>;
-  }
+  if (isLoading) return <div className="p-4">Cargando aliados...</div>;
+  if (isError) return <div className="p-4 text-red-500">Error al cargar aliados</div>;
 
   return (
     <div className="p-4 bg-gray-100 min-h-screen">
@@ -114,7 +108,7 @@ const AliadoList = () => {
         </table>
       </div>
 
-      {(user?.role === "admin" || user?.role === "aliado") && selectedAliado && (
+      {(user?.role === "Administrador" || user?.role === "Aliado") && selectedAliado && (
         <EditAliadoForm
           aliado={selectedAliado}
           onClose={() => setSelectedAliado(null)}

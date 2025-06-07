@@ -8,9 +8,12 @@ interface Props {
 
 const AddAliadoForm = ({ onClose }: Props) => {
   const [formData, setFormData] = useState({
-    id: crypto.randomUUID(),
+    id: "",
     name: "",
     email: "",
+    password: "",
+    role: "Aliado",
+    hidden: false,
   });
 
   const queryClient = useQueryClient();
@@ -23,7 +26,7 @@ const AddAliadoForm = ({ onClose }: Props) => {
     e.preventDefault();
     try {
       await addAliado(formData);
-      queryClient.invalidateQueries({ queryKey: ['aliados'] });
+      queryClient.invalidateQueries({ queryKey: ["aliados"] });
       onClose();
     } catch (error) {
       console.error("Error al agregar aliado", error);
@@ -32,6 +35,15 @@ const AddAliadoForm = ({ onClose }: Props) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <input
+        type="text"
+        name="id"
+        placeholder="ID del Aliado"
+        value={formData.id}
+        onChange={handleChange}
+        required
+        className="w-full p-2 border rounded"
+      />
       <input
         type="text"
         name="name"
@@ -50,6 +62,17 @@ const AddAliadoForm = ({ onClose }: Props) => {
         required
         className="w-full p-2 border rounded"
       />
+      <input
+        type="password"
+        name="password"
+        placeholder="Contraseña"
+        value={formData.password}
+        onChange={handleChange}
+        required
+        className="w-full p-2 border rounded"
+      />
+      {/* El campo Role puede estar oculto si no quieres que el usuario lo modifique */}
+      <input type="hidden" name="Role" value={formData.role} />
       <button
         type="submit"
         className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"

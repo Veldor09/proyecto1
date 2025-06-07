@@ -21,23 +21,38 @@ const NavBar = () => {
         >
           Home
         </Link>
+        
+        <Link
+          to="/user-aliados"
+          className="text-white text-lg font-semibold hover:text-gray-300 transition-colors duration-300"
+        >
+          Programa de Aliados
+        </Link>
+
+        <Link
+          to="/user-voluntarios"
+          className="text-white text-lg font-semibold hover:text-gray-300 transition-colors duration-300"
+        >
+          Programa de Voluntarios
+        </Link>
+
         <Link
           to="/aliados"
           className="text-white text-lg font-semibold hover:text-gray-300 transition-colors duration-300"
         >
-          Aliados
+          Coordinación de Aliados
         </Link>
         <Link
           to="/voluntarios"
           className="text-white text-lg font-semibold hover:text-gray-300 transition-colors duration-300"
         >
-          Voluntarios
+          Coordinación de Voluntarios
         </Link>
         <Link
           to="/proyectos"
           className="text-white text-lg font-semibold hover:text-gray-300 transition-colors duration-300"
         >
-          Proyectos
+          Coordinación de Proyectos
         </Link>
         
       </div>

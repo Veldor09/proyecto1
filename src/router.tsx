@@ -13,6 +13,8 @@ import AliadosPage from './Pages/AliadosPage';
 import ProyectosPage from './Pages/ProyectosPage';
 import VoluntariosPage from './Pages/VoluntariosPage';
 import LoginPage from './Pages/Login.Page';
+import UserAliadosPage from './Pages/UserAliadosPage';
+import UserVoluntariosPage from './Pages/UserVoluntariosPage';
 
 export type RouterContext = {
   auth: {
@@ -65,6 +67,26 @@ const voluntariosRoute = createRoute({
   },
 });
 
+// Página de UserAliados (requiere login)
+const userAliadosRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/user-aliados',
+  component: UserAliadosPage,
+  beforeLoad: ({ context }) => {
+    if (!context.auth.user) throw redirect({ to: '/login' });
+  },
+});
+
+// Página de UserAliados (requiere login)
+const userVoluntariosRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/user-voluntarios',
+  component: UserVoluntariosPage,
+  beforeLoad: ({ context }) => {
+    if (!context.auth.user) throw redirect({ to: '/login' });
+  },
+});
+
 // Página de Login (sin protección)
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -90,6 +112,8 @@ rootRoute.addChildren([
   proyectosRoute,
   voluntariosRoute,
   loginRoute,
+  userAliadosRoute,
+  userVoluntariosRoute,
   notFoundRoute,
 ]);
 
