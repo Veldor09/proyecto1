@@ -8,7 +8,7 @@ const AddProyectoButton = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   //  Ocultar botón si no es admin
-  if (user?.role !== "admin") return null;
+  if (user?.role !== "Administrador") return null;
 
   return (
     <>

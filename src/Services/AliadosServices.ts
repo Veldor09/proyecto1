@@ -1,71 +1,60 @@
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import axios from 'axios';
+import { Aliado } from '../Types/AliadoTypes';
 
-// Tipo para representar un Aliado
-export interface Aliado {
-  id: string;
-  name: string;
-  email: string;
-}
+const ALIADOS_API_URL = 'https://localhost:7003/api/Aliados';
 
-// Configuración de la API
-const BIN = '682807468a456b79669f616e';
-const ALIADOS_API_URL = `https://api.jsonbin.io/v3/b/${BIN}`;
-const API_KEY = '$2a$10$1WE9CA71m8Ipze4nUPEUSORtrEj2XD95J9mSOlGqY53PTrY4mdanW';
-
-const HEADERS = {
-  'X-Access-Key': API_KEY,
-  'Content-Type': 'application/json',
-};
-
-// Obtener aliados
-const fetchAliados = async (): Promise<Aliado[]> => {
+// 1. Obtener todos los Aliados
+export const fetchAliados = async (): Promise<Aliado[]> => {
   try {
-    const response = await axios.get(ALIADOS_API_URL, { headers: HEADERS });
-    return response.data.record.aliados || [];
+    const response = await axios.get(ALIADOS_API_URL);
+    console.log("Respuesta de aliados:", response.data);
+    return response.data; // <-- asegúrate que esto es un array plano
   } catch (error) {
     console.error('Error al obtener aliados:', error);
     return [];
   }
 };
 
-// Agregar aliado
-export const addAliado = async (newAliado: Aliado): Promise<void> => {
+// 2. Agregar un nuevo aliado
+export const addAliado = async (newAliado: Aliado): Promise<Aliado> => {
   try {
-    const response = await axios.get(ALIADOS_API_URL, { headers: HEADERS });
-    const current: Aliado[] = response.data.record.aliados || [];
-    const updated = [...current, newAliado];
-
-    await axios.put(ALIADOS_API_URL, { aliados: updated }, { headers: HEADERS });
+    const response = await axios.post(ALIADOS_API_URL, newAliado);
+    return response.data;
   } catch (error) {
     console.error('Error al agregar aliado:', error);
     throw error;
   }
 };
 
-// Hook personalizado para React Query
+// 3. Hook de React Query para obtener aliados
+import { useQuery } from '@tanstack/react-query';
+
 export const useAliados = () => {
   return useQuery<Aliado[]>({
     queryKey: ['aliados'],
     queryFn: fetchAliados,
-    staleTime: 5 * 60 * 1000, // 5 minutos
+    staleTime: 5 * 60 * 1000,
     retry: 1,
   });
 };
 
-// Editar aliado existente
-export const updateAliado = async (updatedAliado: Aliado): Promise<void> => {
+// 4. Actualizar aliado existente
+export const updateAliado = async (updatedAliado: Aliado): Promise<Aliado> => {
   try {
-    const response = await axios.get(ALIADOS_API_URL, { headers: HEADERS });
-    const current: Aliado[] = response.data.record.aliados || [];
-
-    const updatedAliados = current.map((aliado: Aliado) =>
-      aliado.id === updatedAliado.id ? updatedAliado : aliado
-    );
-
-    await axios.put(ALIADOS_API_URL, { aliados: updatedAliados }, { headers: HEADERS });
+    const response = await axios.put(`${ALIADOS_API_URL}/${updatedAliado.id}`, updatedAliado);
+    return response.data;
   } catch (error) {
     console.error('Error al actualizar aliado:', error);
+    throw error;
+  }
+};
+
+// 5. Eliminar aliado (si deseas ocultarlo, puedes usar PATCH o PUT para marcar como "hidden")
+export const deleteAliado = async (Id: string): Promise<void> => {
+  try {
+    await axios.delete(`${ALIADOS_API_URL}/${Id}`);
+  } catch (error) {
+    console.error('Error al eliminar aliado:', error);
     throw error;
   }
 };

@@ -1,15 +1,15 @@
-// src/Components/TablaUsuarios.tsx
 import { useAuth } from "../Context/AuthContext";
 
 interface Usuario {
-  id: number;
-  nombre: string;
+  id: string;
+  name: string;
   email: string;
+  role: "Administrador" | "Voluntario" | "Aliado";
 }
 
 const usuariosEjemplo: Usuario[] = [
-  { id: 1, nombre: "Pedro", email: "uservoluntario@example.com" },
-  { id: 2, nombre: "Ana", email: "useraliado@example.com" },
+  { id: "1", name: "Pedro", email: "uservoluntario@example.com", role: "Voluntario" },
+  { id: "2", name: "Ana", email: "useraliado@example.com", role: "Aliado" },
 ];
 
 export const TablaUsuarios = () => {
@@ -35,10 +35,10 @@ export const TablaUsuarios = () => {
       <tbody>
         {usuariosEjemplo.map((usuario) => (
           <tr key={usuario.id} className="text-center">
-            <td className="p-2 border">{usuario.nombre}</td>
+            <td className="p-2 border">{usuario.name}</td>
             <td className="p-2 border">{usuario.email}</td>
             <td className="p-2 border space-x-2">
-              {(user?.role === "admin" || user?.email === usuario.email) && (
+              {(user?.role === "Administrador" || user?.id === usuario.id) && (
                 <button
                   onClick={() => handleEditar(usuario)}
                   className="bg-yellow-400 px-3 py-1 rounded text-white"
@@ -46,7 +46,7 @@ export const TablaUsuarios = () => {
                   Editar
                 </button>
               )}
-              {user?.role === "admin" && (
+              {user?.role === "Administrador" && (
                 <button
                   onClick={() => handleEliminar(usuario)}
                   className="bg-red-500 px-3 py-1 rounded text-white"

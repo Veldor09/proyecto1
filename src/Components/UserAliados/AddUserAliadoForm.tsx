@@ -1,19 +1,16 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { addVoluntario } from "../../Services/VoluntariosServices";
+import { createUserAliado } from "../../Services/UserAliadosServices";
 
 interface Props {
   onClose: () => void;
 }
 
-const AddVoluntarioForm = ({ onClose }: Props) => {
+const AddUserAliadoForm = ({ onClose }: Props) => {
   const [formData, setFormData] = useState({
-    id: "",
     name: "",
     email: "",
-    password: "",
-    role: "Voluntario",
-    hidden: false,
+    number: "",
   });
 
   const queryClient = useQueryClient();
@@ -25,25 +22,16 @@ const AddVoluntarioForm = ({ onClose }: Props) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await addVoluntario(formData);
-      queryClient.invalidateQueries({ queryKey: ["voluntarios"] });
+      await createUserAliado(formData);
+      queryClient.invalidateQueries({ queryKey: ["userAliados"] });
       onClose();
     } catch (error) {
-      console.error("Error al agregar voluntario", error);
+      console.error("Error al agregar Aliado", error);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <input
-        type="text"
-        name="id"
-        placeholder="ID del Voluntario"
-        value={formData.id}
-        onChange={handleChange}
-        required
-        className="w-full p-2 border rounded"
-      />
       <input
         type="text"
         name="name"
@@ -63,24 +51,22 @@ const AddVoluntarioForm = ({ onClose }: Props) => {
         className="w-full p-2 border rounded"
       />
       <input
-        type="password"
-        name="password"
-        placeholder="Contraseña"
-        value={formData.password}
+        type="text"
+        name="number"
+        placeholder="Número"
+        value={formData.number}
         onChange={handleChange}
         required
         className="w-full p-2 border rounded"
       />
-      {/* El campo Role puede estar oculto si no quieres que el usuario lo modifique */}
-      <input type="hidden" name="Role" value={formData.role} />
       <button
         type="submit"
         className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
       >
-        Agregar Voluntario
+        Agregar Aliado
       </button>
     </form>
   );
 };
 
-export default AddVoluntarioForm;
+export default AddUserAliadoForm;

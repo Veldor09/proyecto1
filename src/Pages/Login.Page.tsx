@@ -1,25 +1,20 @@
+// src/Pages/LoginPage.tsx
 import { useContext, useState } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "@tanstack/react-router";
-import { useLogin } from "../Hooks/useLogin";
-import axios from "axios";
-import { hash } from "bcryptjs";
-
-const API_KEY = "$2a$10$JMHiHuAzVzegUTuogZLRq.GRbcBWpFNpkBJ2kgEK4SQ9LQYUxAF0K";
-const BIN_ID_USUARIOS = "682806fd8960c979a59b20ad";
-const BIN_ID_VOLUNTARIOS = "6828075f8a456b79669f617b";
-const BIN_ID_ALIADOS = "682807468a456b79669f616e";
+import { useAuthService } from "../Hooks/useAuthService";
 
 const LoginPage = () => {
   const { login: loginToContext } = useContext(AuthContext);
-  const { login } = useLogin();
+  const { login, register } = useAuthService();
   const navigate = useNavigate();
 
   const [isRegistering, setIsRegistering] = useState(false);
+  const [id, setId] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [role, setRole] = useState("voluntario");
+  const [role, setRole] = useState("Voluntario"); // valor por defecto
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,89 +22,28 @@ const LoginPage = () => {
     setError("");
 
     if (isRegistering) {
-      try {
-        const hashedPassword = await hash(password, 10);
-        const id = crypto.randomUUID();
-
-        // Guardar en bin de usuarios
-        const resUsuarios = await axios.get(`https://api.jsonbin.io/v3/b/${BIN_ID_USUARIOS}`, {
-          headers: { "X-Master-Key": API_KEY },
-        });
-        const usuarios = resUsuarios.data.record || [];
-
-        const nuevoUsuario = {
-          id,
-          name,
-          email,
-          password: hashedPassword,
-          role,
-        };
-
-        await axios.put(
-          `https://api.jsonbin.io/v3/b/${BIN_ID_USUARIOS}`,
-          [...usuarios, nuevoUsuario],
-          {
-            headers: {
-              "X-Master-Key": API_KEY,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        // Guardar en bin de aliados o voluntarios
-        if (role !== "admin") {
-          const binPublico = role === "voluntario" ? BIN_ID_VOLUNTARIOS : BIN_ID_ALIADOS;
-          const clave = role === "voluntario" ? "voluntarios" : "aliados";
-
-          const resPublico = await axios.get(`https://api.jsonbin.io/v3/b/${binPublico}`, {
-            headers: { "X-Master-Key": API_KEY },
-          });
-
-          const actuales = resPublico.data.record?.[clave] || [];
-
-          const nuevoPublico = {
-            id,
-            name,
-            email,
-            role,
-          };
-
-          await axios.put(
-            `https://api.jsonbin.io/v3/b/${binPublico}`,
-            { [clave]: [...actuales, nuevoPublico] },
-            {
-              headers: {
-                "X-Master-Key": API_KEY,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-        }
-
+      const result = await register(id, name, email, password, role as any);
+      if (result.success) {
         alert("Cuenta creada exitosamente. Ahora puedes iniciar sesión.");
         setIsRegistering(false);
         setPassword("");
-      } catch (error) {
-        console.error(error);
+      } else {
         setError("Error al registrar usuario");
       }
       return;
     }
 
-    // Modo login
-    const result = await login(email, password, role);
-
+    const result = await login(id, password, role as any);
     if (result.success && result.user) {
       loginToContext(result.user);
-
       switch (result.user.role) {
-        case "admin":
+        case "Administrador":
           navigate({ to: "/proyectos" });
           break;
-        case "aliado":
+        case "Aliado":
           navigate({ to: "/aliados" });
           break;
-        case "voluntario":
+        case "Voluntario":
           navigate({ to: "/voluntarios" });
           break;
         default:
@@ -135,37 +69,44 @@ const LoginPage = () => {
         )}
 
         {isRegistering && (
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Nombre
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="shadow border rounded w-full py-2 px-3"
-            />
-          </div>
+          <>
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2">Nombre</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="shadow border rounded w-full py-2 px-3"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2">Correo Electrónico</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="shadow border rounded w-full py-2 px-3"
+              />
+            </div>
+          </>
         )}
 
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Correo
-          </label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">ID</label>
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            value={id}
+            onChange={(e) => setId(e.target.value)}
             required
             className="shadow border rounded w-full py-2 px-3"
           />
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Contraseña
-          </label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Contraseña</label>
           <input
             type="password"
             value={password}
@@ -176,34 +117,34 @@ const LoginPage = () => {
         </div>
 
         <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Rol
-          </label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Rol</label>
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
             className="shadow border rounded w-full py-2 px-3"
+            required
           >
-            <option value="voluntario">Voluntario</option>
-            <option value="aliado">Aliado</option>
-            <option value="admin">Administrador</option>
+            <option value="Voluntario">Voluntario</option>
+            <option value="Aliado">Aliado</option>
+            <option value="Administrador">Administrador</option>
           </select>
         </div>
 
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
         >
-          {isRegistering ? "Crear cuenta" : "Ingresar"}
+          {isRegistering ? "Registrarse" : "Iniciar Sesión"}
         </button>
 
-        <button
-          type="button"
+        <p
+          className="mt-4 text-sm text-center text-blue-500 hover:underline cursor-pointer"
           onClick={() => setIsRegistering(!isRegistering)}
-          className="mt-4 text-blue-500 hover:underline text-sm w-full text-center"
         >
-          {isRegistering ? "¿Ya tienes cuenta? Inicia sesión" : "¿No tienes cuenta? Regístrate"}
-        </button>
+          {isRegistering
+            ? "¿Ya tienes una cuenta? Inicia sesión"
+            : "¿No tienes cuenta? Regístrate"}
+        </p>
       </form>
     </div>
   );

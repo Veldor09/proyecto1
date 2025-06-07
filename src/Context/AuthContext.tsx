@@ -2,9 +2,9 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 export type User = {
-  email: string;
+  id: string;
   name: string;
-  role: 'admin' | 'voluntario' | 'aliado';
+  role: 'Administrador' | 'Voluntario' | 'Aliado';
 };
 
 type AuthContextType = {

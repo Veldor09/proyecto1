@@ -1,94 +1,41 @@
 // src/Pages/RegisterPage.tsx
-import { useState } from 'react';
-import axios from 'axios';
-import { hash } from 'bcryptjs';
-import { useNavigate } from '@tanstack/react-router';
-
-const API_KEY = '$2a$10$JMHiHuAzVzegUTuogZLRq.GRbcBWpFNpkBJ2kgEK4SQ9LQYUxAF0K';
-const BIN_ID_USUARIOS = '682806fd8960c979a59b20ad';
-const BIN_ID_VOLUNTARIOS = '6828075f8a456b79669f617b';
-const BIN_ID_ALIADOS = '682807468a456b79669f616e';
+import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "@tanstack/react-router";
 
 const RegisterPage = () => {
   const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: 'voluntario',
+    id: "",
+    name: "",
+    email: "",
+    password: "",
+    role: "Voluntario",
   });
-  const [error, setError] = useState('');
+
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     try {
-      const hashedPassword = await hash(form.password, 10);
-      const id = crypto.randomUUID();
-
-      // 1. Guardar en bin privado (usuarios)
-      const resUsuarios = await axios.get(`https://api.jsonbin.io/v3/b/${BIN_ID_USUARIOS}`, {
-        headers: { 'X-Master-Key': API_KEY },
-      });
-      const usuarios = resUsuarios.data.record || [];
-
-      const nuevoUsuario = {
-        id,
-        name: form.name,
-        email: form.email,
-        password: hashedPassword,
-        role: form.role,
-      };
-
-      await axios.put(
-        `https://api.jsonbin.io/v3/b/${BIN_ID_USUARIOS}`,
-        [...usuarios, nuevoUsuario],
-        {
-          headers: {
-            'X-Master-Key': API_KEY,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      // 2. Guardar en bin público según el rol
-      const binPublico = form.role === 'voluntario' ? BIN_ID_VOLUNTARIOS : BIN_ID_ALIADOS;
-      const clave = form.role === 'voluntario' ? 'voluntarios' : 'aliados';
-
-      const resPublico = await axios.get(`https://api.jsonbin.io/v3/b/${binPublico}`, {
-        headers: { 'X-Master-Key': API_KEY },
-      });
-
-      const datos = resPublico.data.record?.[clave] || [];
-
-      const usuarioPublico = {
-        id,
-        name: form.name,
-        email: form.email,
-        role: form.role,
-      };
-
-      await axios.put(
-        `https://api.jsonbin.io/v3/b/${binPublico}`,
-        { [clave]: [...datos, usuarioPublico] },
-        {
-          headers: {
-            'X-Master-Key': API_KEY,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      alert('Registro exitoso');
-      navigate({ to: '/login' });
-    } catch (error) {
+      await axios.post("https://localhost:7003/api/Auth/register", form);
+      alert("Registro exitoso");
+      navigate({ to: "/login" });
+    } catch (error: any) {
       console.error(error);
-      setError('Error al registrar usuario');
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Error al registrar usuario");
+      }
     }
   };
 
@@ -104,6 +51,16 @@ const RegisterPage = () => {
 
         <input
           type="text"
+          name="id"
+          placeholder="ID de usuario"
+          value={form.id}
+          onChange={handleChange}
+          required
+          className="mb-4 p-3 border rounded w-full"
+        />
+
+        <input
+          type="text"
           name="name"
           placeholder="Nombre"
           value={form.name}
@@ -111,6 +68,7 @@ const RegisterPage = () => {
           required
           className="mb-4 p-3 border rounded w-full"
         />
+
         <input
           type="email"
           name="email"
@@ -120,6 +78,7 @@ const RegisterPage = () => {
           required
           className="mb-4 p-3 border rounded w-full"
         />
+
         <input
           type="password"
           name="password"
@@ -129,16 +88,18 @@ const RegisterPage = () => {
           required
           className="mb-4 p-3 border rounded w-full"
         />
+
         <select
           name="role"
           value={form.role}
           onChange={handleChange}
           className="mb-6 p-3 border rounded w-full"
         >
-          <option value="voluntario">Voluntario</option>
-          <option value="aliado">Aliado</option>
-          {/* Administrador eliminado del formulario */}
+          <option value="Voluntario">Voluntario</option>
+          <option value="Aliado">Aliado</option>
+          <option value="Administrador">Administrador</option>
         </select>
+
         <button
           type="submit"
           className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded"

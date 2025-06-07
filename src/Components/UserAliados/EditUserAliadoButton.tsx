@@ -1,24 +1,25 @@
-// src/Components/Aliados/EditAliadoForm.tsx
+// Components/UserAliados/EditUserAliadoForm.tsx
 import { useState } from "react";
-import { updateAliado } from "../../Services/AliadosServices";
+import { updateUserAliado } from "../../Services/UserAliadosServices";
 
-type Aliado = {
+type UserAliado = {
   id: string;
   name: string;
   email: string;
-  role: string;
+  number: string;
+  hidden?: boolean;
 };
 
-type EditAliadoFormProps = {
-  aliado: Aliado;
+type EditUserAliadoFormProps = {
+  userAliado: UserAliado;
   onClose: () => void;
   onSave: () => void;
 };
 
-const EditAliadoForm = ({ aliado, onClose, onSave }: EditAliadoFormProps) => {
-  const [name, setName] = useState(aliado.name);
-  const [email, setEmail] = useState(aliado.email);
-  const [role, setRole] = useState(aliado.role);
+const EditUserAliadoForm = ({ userAliado, onClose, onSave }: EditUserAliadoFormProps) => {
+  const [name, setName] = useState(userAliado.name);
+  const [email, setEmail] = useState(userAliado.email);
+  const [number, setNumber] = useState(userAliado.number);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -28,11 +29,11 @@ const EditAliadoForm = ({ aliado, onClose, onSave }: EditAliadoFormProps) => {
     setError("");
 
     try {
-      await updateAliado({ ...aliado, name, email, role });
+      await updateUserAliado(userAliado.id, { name, email, number });
       onSave(); // Refresca la tabla y cierra el modal
     } catch (err) {
       console.error(err);
-      setError("Hubo un error al actualizar el aliado.");
+      setError("Hubo un error al actualizar el Aliado.");
     } finally {
       setLoading(false);
     }
@@ -65,17 +66,14 @@ const EditAliadoForm = ({ aliado, onClose, onSave }: EditAliadoFormProps) => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Rol</label>
-            <select
+            <label className="block text-sm font-medium text-gray-700">Número</label>
+            <input
+              type="text"
               className="mt-1 block w-full border border-gray-300 rounded px-3 py-2"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
+              value={number}
+              onChange={(e) => setNumber(e.target.value)}
               required
-            >
-              <option value="Aliado">Aliado</option>
-              <option value="Administrador">Administrador</option>
-              <option value="Voluntario">Voluntario</option>
-            </select>
+            />
           </div>
           <div className="flex justify-end space-x-2">
             <button
@@ -100,4 +98,4 @@ const EditAliadoForm = ({ aliado, onClose, onSave }: EditAliadoFormProps) => {
   );
 };
 
-export default EditAliadoForm;
+export default EditUserAliadoForm;

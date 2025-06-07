@@ -3,30 +3,9 @@ import { addProyecto, updateProyecto } from "../../Services/ProyectosServices";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAliados } from "../../Services/AliadosServices";
 import { useVoluntarios } from "../../Services/VoluntariosServices";
-
-interface Aliado {
-  name: string;
-  email: string;
-}
-
-interface Voluntario {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
-
-interface Proyecto {
-  id: string;
-  nombre: string;
-  ubicacion: string;
-  tieneFondos: boolean;
-  tieneAliados: boolean;
-  aliados: string[];
-  tieneVoluntarios: boolean;
-  voluntarios: string[];
-  hidden?: boolean;
-}
+import { Aliado } from "../../Types/AliadoTypes";
+import { Voluntario } from "../../Types/VoluntarioTypes";
+import { Proyecto } from "../../Types/ProyectoTypes";
 
 interface Props {
   onClose: () => void;
@@ -37,7 +16,7 @@ interface Props {
 const AddProyectoForm = ({ onClose, initialData, isEdit }: Props) => {
   const [formData, setFormData] = useState<Proyecto>(
     initialData || {
-      id: crypto.randomUUID(),
+      id: "",
       nombre: "",
       ubicacion: "",
       tieneFondos: false,
@@ -50,27 +29,18 @@ const AddProyectoForm = ({ onClose, initialData, isEdit }: Props) => {
   );
 
   const queryClient = useQueryClient();
-
-  const { data: aliados } = useAliados() as { data: Aliado[] };
-  const { data: voluntarios } = useVoluntarios() as { data: Voluntario[] };
+  const { data: aliados = [] } = useAliados();
+  const { data: voluntarios = [] } = useVoluntarios();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
-
-    if (type === "checkbox") {
-      const target = e.target as HTMLInputElement;
-      setFormData((prev) => ({
-        ...prev,
-        [name]: target.checked,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+    const isCheckbox = type === "checkbox";
+    setFormData((prev) => ({
+      ...prev,
+      [name]: isCheckbox ? (e.target as HTMLInputElement).checked : value,
+    }));
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -87,7 +57,6 @@ const AddProyectoForm = ({ onClose, initialData, isEdit }: Props) => {
       } else {
         await addProyecto(formData);
       }
-
       queryClient.invalidateQueries({ queryKey: ["proyectos"] });
       onClose();
     } catch (error) {
@@ -100,6 +69,18 @@ const AddProyectoForm = ({ onClose, initialData, isEdit }: Props) => {
       onSubmit={handleSubmit}
       className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4"
     >
+      {!isEdit && (
+        <input
+          type="text"
+          name="id"
+          placeholder="ID del proyecto"
+          value={formData.id}
+          onChange={handleChange}
+          required
+          className="w-full p-2 border rounded"
+        />
+      )}
+
       <input
         type="text"
         name="nombre"
@@ -148,7 +129,7 @@ const AddProyectoForm = ({ onClose, initialData, isEdit }: Props) => {
           value={formData.aliados}
           className="md:col-span-2 w-full p-2 border rounded"
         >
-          {aliados?.map((a) => (
+          {aliados.map((a: Aliado) => (
             <option key={a.email} value={a.name}>
               {a.name}
             </option>
@@ -174,7 +155,7 @@ const AddProyectoForm = ({ onClose, initialData, isEdit }: Props) => {
           value={formData.voluntarios}
           className="md:col-span-2 w-full p-2 border rounded"
         >
-          {voluntarios?.map((v) => (
+          {voluntarios.map((v: Voluntario) => (
             <option key={v.id} value={v.name}>
               {v.name}
             </option>

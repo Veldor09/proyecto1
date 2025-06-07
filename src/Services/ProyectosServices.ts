@@ -1,72 +1,60 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { Proyecto } from "../Types/ProyectoTypes";
 
-export interface Proyecto {
-  id: string;
-  nombre: string;
-  ubicacion: string;
-  tieneFondos: boolean;
-  tieneAliados: boolean;
-  aliados: string[];
-  tieneVoluntarios: boolean;
-  voluntarios: string[];
-  hidden?: boolean;
-}
+const PROYECTO_API_URL = "https://localhost:7003/api/Proyectos";
 
-const BIN_ID = "682807228960c979a59b20be";
-const PROYECTOS_API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-const API_KEY = "$2a$10$1WE9CA71m8Ipze4nUPEUSORtrEj2XD95J9mSOlGqY53PTrY4mdanW";
-
-const HEADERS = {
-  "X-Access-Key": API_KEY,
-  "Content-Type": "application/json",
-};
-
-const fetchProyectos = async (): Promise<Proyecto[]> => {
+// 1. Obtener todos los proyectos
+export const fetchProyectos = async (): Promise<Proyecto[]> => {
   try {
-    const response = await axios.get(PROYECTOS_API_URL, { headers: HEADERS });
-    const todos = response.data.record.proyectos || [];
-    return todos.filter((p: Proyecto) => !p.hidden);
+    const response = await axios.get(PROYECTO_API_URL);
+    return response.data;
   } catch (error) {
     console.error("Error al obtener proyectos:", error);
     return [];
   }
 };
 
-export const addProyecto = async (newProyecto: Proyecto): Promise<void> => {
+// 2. Agregar nuevo proyecto
+export const addProyecto = async (newProyecto: Proyecto): Promise<Proyecto> => {
   try {
-    const response = await axios.get(PROYECTOS_API_URL, { headers: HEADERS });
-    const current: Proyecto[] = response.data.record.proyectos || [];
-    const updated = [...current, newProyecto];
-
-    await axios.put(PROYECTOS_API_URL, { proyectos: updated }, { headers: HEADERS });
+    const response = await axios.post(PROYECTO_API_URL, newProyecto);
+    return response.data;
   } catch (error) {
     console.error("Error al agregar proyecto:", error);
     throw error;
   }
 };
 
-export const updateProyecto = async (updatedProyecto: Proyecto): Promise<void> => {
+// 3. Actualizar proyecto existente
+export const updateProyecto = async (updatedProyecto: Proyecto): Promise<Proyecto> => {
   try {
-    const response = await axios.get(PROYECTOS_API_URL, { headers: HEADERS });
-    const current: Proyecto[] = response.data.record.proyectos || [];
-
-    const updated = current.map((p: Proyecto) =>
-      p.id === updatedProyecto.id ? updatedProyecto : p
-    );
-
-    await axios.put(PROYECTOS_API_URL, { proyectos: updated }, { headers: HEADERS });
+    const response = await axios.put(`${PROYECTO_API_URL}/${updatedProyecto.id}`, updatedProyecto);
+    return response.data;
   } catch (error) {
     console.error("Error al actualizar proyecto:", error);
     throw error;
   }
 };
 
+// 4. Ocultar proyecto (marcar hidden: true)
+export const deleteProyecto = async (id: string): Promise<void> => {
+  try {
+    await axios.put(`${PROYECTO_API_URL}/${id}/ocultar`);
+  } catch (error) {
+    console.error("Error al ocultar proyecto:", error);
+    throw error;
+  }
+};
+
+// 5. Hook react-query
 export const useProyectos = () => {
   return useQuery<Proyecto[]>({
-    queryKey: ['proyectos'],
+    queryKey: ["proyectos"],
     queryFn: fetchProyectos,
     staleTime: 5 * 60 * 1000,
     retry: 1,
   });
 };
+
+export type { Proyecto };
